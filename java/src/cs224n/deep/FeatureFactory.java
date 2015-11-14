@@ -62,9 +62,20 @@ public class FeatureFactory {
 	// might be useful for word to number lookups, just access them directly in WindowModel
 	public static HashMap<String, Integer> wordToNum = new HashMap<String, Integer>(); 
 	public static HashMap<Integer, String> numToWord = new HashMap<Integer, String>();
+	private static int wordCounter = 0;
 
 	public static HashMap<String, Integer> initializeVocab(String vocabFilename) throws IOException {
-		//TODO: create this
+	  BufferedReader in = new BufferedReader(new FileReader(vocabFilename));
+    for (String word = in.readLine(); word != null; word = in.readLine()) {
+      // Skip any empty lines or words that have already appeared
+      if (word.trim().length() == 0 || wordToNum.containsKey(word)) {
+        continue;
+      }
+      wordToNum.put(word, wordCounter);
+      numToWord.put(wordCounter, word);
+      wordCounter++;
+    }
+    in.close();
 		return wordToNum;
 	}
  
