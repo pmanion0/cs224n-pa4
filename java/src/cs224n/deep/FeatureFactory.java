@@ -51,14 +51,60 @@ public class FeatureFactory {
  
  
 	// Look up table matrix with all word vectors as defined in lecture with dimensionality n x |V|
-	static SimpleMatrix allVecs; //access it directly in WindowModel
+	
+	/**
+	 * Convert a densely represented file of doubles into a SimpleMatrix that can be
+	 * used as a mapping from the vocabulary to each word vector
+	 */
+	static SimpleMatrix allVecs;
 	public static SimpleMatrix readWordVectors(String vecFilename) throws IOException {
-		if (allVecs!=null) return allVecs;
-		return null;
-		//TODO implement this
-		//set allVecs from filename		
-
+		if (allVecs != null) {
+		  return allVecs;
+		}
+		double[][] wordVec = initArrayFromFile(vecFilename);
+		BufferedReader reader = new BufferedReader(new FileReader(vecFilename));
+    for (int i=0; i < wordVec.length; i++) {
+      String line = reader.readLine();
+      fillDoubleWithLine(line, wordVec[i]);
+    }
+    reader.close();
+    allVecs = new SimpleMatrix(wordVec); 
+		return allVecs;
 	}
+	
+	/**
+	 * Initialize a double array based on the columns/rows in a file. This assumes
+	 * every row is non-empty, has the same number of columns, and is dense.
+	 */
+	public static double[][] initArrayFromFile(String filename) throws IOException {
+	  BufferedReader reader = new BufferedReader(new FileReader(filename));
+    int colCount = reader.readLine().split(" ").length;
+    int rowCount = countLines(filename);
+    return new double[rowCount][colCount];
+	}
+	
+  /**
+   * Count the number of lines in a file
+   */
+  public static int countLines(String filename) throws IOException {
+    int lineCount = 0;
+    BufferedReader reader = new BufferedReader(new FileReader(filename));
+    while (reader.readLine() != null)
+      lineCount++;
+    return lineCount;
+  }
+	
+	/**
+   * Split a delimited string of numbers and place them into a double array
+   */
+  public static void fillDoubleWithLine(String line, double[] storage) {
+    String[] strVals = line.split(" ");
+    for (int i=0; i < strVals.length; i++)
+      storage[i] = Double.valueOf(strVals[i]);
+  }
+	
+
+	
 	// might be useful for word to number lookups, just access them directly in WindowModel
 	public static HashMap<String, Integer> wordToNum = new HashMap<String, Integer>(); 
 	public static HashMap<Integer, String> numToWord = new HashMap<Integer, String>();
