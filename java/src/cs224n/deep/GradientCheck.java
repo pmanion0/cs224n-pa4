@@ -1,7 +1,6 @@
 package cs224n.deep;
 
 import java.util.List;
-import java.io.BufferedWriter;
 import org.ejml.simple.SimpleMatrix;
 
 /**
@@ -13,9 +12,6 @@ import org.ejml.simple.SimpleMatrix;
 
 public class GradientCheck {
 
-  // Currently unused
-  public static String historyLog = "gradchecks.log";
-
   public static final double eps = 1e-4;
   public static final double abs_threshold = 1e-7;
   public static final double rel_threshold = 1e-9;
@@ -26,6 +22,9 @@ public class GradientCheck {
    * derivatives, calculates the relative and absolute error and logs them to
    * file.
    *
+   * @param Y:
+   *          The actual label vector for a given example.
+   * 
    * @param weights:
    *          The weight matrices for the neural network. By convention, the
    *          last weight matrix is taken to be the input vector X derived from
@@ -48,7 +47,7 @@ public class GradientCheck {
    *         different network dimensions.
    */
 
-  public static boolean check(List<SimpleMatrix> weights, List<SimpleMatrix> matrixDerivatives,
+  public static boolean check(SimpleMatrix Y, List<SimpleMatrix> weights, List<SimpleMatrix> matrixDerivatives,
       ObjectiveFunction objFn) {
 
     SimpleMatrix X = weights.get(weights.size() - 1);
@@ -74,7 +73,7 @@ public class GradientCheck {
       } else {
         flops += (w.numRows() + w.numCols());
       }
-      error += errFromMatrix(w, dw, objFn, X);
+      error += errFromMatrix(Y, w, dw, objFn, X);
 
     }
     error = Math.sqrt(error);
@@ -88,7 +87,8 @@ public class GradientCheck {
    * Finds the error from the given matrix by deviating by eps in both
    * directions.
    */
-  private static double errFromMatrix(SimpleMatrix matr, SimpleMatrix deriv, ObjectiveFunction objFn, SimpleMatrix X) {
+  private static double errFromMatrix(SimpleMatrix Y, SimpleMatrix matr, SimpleMatrix deriv, ObjectiveFunction objFn,
+      SimpleMatrix X) {
     double error = 0;
     for (int c = 0; c < matr.numCols(); c++) {
       for (int r = 0; r < matr.numRows(); r++) {
@@ -96,9 +96,9 @@ public class GradientCheck {
         double prior = matr.get(r, c);
 
         matr.set(r, c, prior + eps);
-        double higher = objFn.valueAt(X);
+        double higher = objFn.valueAt(Y, X);
         matr.set(r, c, prior - eps);
-        double lower = objFn.valueAt(X);
+        double lower = objFn.valueAt(Y, X);
         matr.set(r, c, prior);
 
         double analytic_deriv = (higher - lower) / (2.0 * eps);
