@@ -15,19 +15,22 @@ public class NER {
 	}	    
 
 	// this reads in the train and test datasets
-	List<Datum> trainData = FeatureFactory.readTrainData(args[0]);
-	List<Datum> testData = FeatureFactory.readTestData(args[1]);	
-	
+//	List<Datum> trainData = FeatureFactory.readTrainData(args[0]);
+//	List<Datum> testData = FeatureFactory.readTestData(args[1]);	
+	List<Datum> trainData = FeatureFactory.readTrainData("/Users/ldi020/Playground/cs224n/pa4/data/train");
+	List<Datum> testData = FeatureFactory.readTestData("/Users/ldi020/Playground/cs224n/pa4/data/dev");	
 	//	read the train and test data
 	//TODO: Implement this function (just reads in vocab and word vectors)
-	FeatureFactory.initializeVocab("../data/vocab.txt");
-	SimpleMatrix allVecs= FeatureFactory.readWordVectors("../data/wordVectors.txt");
+	FeatureFactory.initializeVocab("/Users/ldi020/Playground/cs224n/pa4/data/vocab.txt");
+	SimpleMatrix allVecs= FeatureFactory.readWordVectors("/Users/ldi020/Playground/cs224n/pa4/data/wordVectors.txt");
 
 	// initialize model 
 	WindowModel model = new WindowModel(5, 100,0.001);
 	model.initWeights();
 
 	//TODO: Implement those two functions
+	model.trainBaseLine(trainData);
+	model.testBaseLine(testData, "/Users/ldi020/Playground/cs224n/pa4/data/output/baseline.txt");
 	//model.train(trainData);
 	//model.test(testData);
     }
