@@ -16,7 +16,7 @@ public class WindowModel {
 
   public WindowModel(int wordVecSize, int windowSize, int[] hiddenSizes, FeatureFactory ff) {
     if (windowSize % 2 == 0) {
-      System.err.println("ERROR: I'm sorry, Dave. I can't let you use even windowSizes.");
+      System.err.println("ERROR: I'm sorry Dave. I'm afraid I can't let you use even windowSizes.");
       windowSize = 3;
     }
     this.wordVecSize = wordVecSize;
