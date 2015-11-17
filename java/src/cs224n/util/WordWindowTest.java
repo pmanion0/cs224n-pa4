@@ -45,13 +45,11 @@ public class WordWindowTest {
     // Check the initial word windows are correct (SIZE == 3)
     WordWindow test = new WordWindow(example, 3);
     
-    List<String> windowStr = test.getWindowStr();
     String[] windowStrAnswer = new String[]{"<s>","John","joined"};
-    assert(listEqualsArray(windowStr, windowStrAnswer));
+    assertArrayEquals(windowStrAnswer, test.getWordArray());
     
-    List<Integer> windowInt = test.getWindowIDs();
-    Integer[] windowIntAnswer = new Integer[]{5,0,1};
-    assert(listEqualsArray(windowInt, windowIntAnswer));
+    int[] windowIntAnswer = new int[]{5,0,1};
+    assertArrayEquals(windowIntAnswer, test.getIDArray());
   }
 
   @Test
@@ -59,65 +57,50 @@ public class WordWindowTest {
     // Check the initial word windows are correct (SIZE == 5)
     WordWindow test = new WordWindow(example, 5);
     
-    List<String> windowStr = test.getWindowStr();
     String[] windowStrAnswer = new String[]{"<s>","<s>","John","joined","PETA"};
-    assert(listEqualsArray(windowStr, windowStrAnswer));
+    assertArrayEquals(windowStrAnswer, test.getWordArray());
     
-    List<Integer> windowInt = test.getWindowIDs();
-    Integer[] windowIntAnswer = new Integer[]{5,5,0,1,2};
-    assert(listEqualsArray(windowInt, windowIntAnswer));
+    int[] windowIntAnswer = new int[]{5,5,0,1,2};
+    assertArrayEquals(windowIntAnswer, test.getIDArray());
   }
 
   
   @Test
   public void testRollWindow() {
+    // Check the rolling windows work for String and Integer
     String[] windowStrAnswer;
+    int[] windowIntAnswer;
     WordWindow test = new WordWindow(example, 5);
+    
     // Roll 1
     test.rollWindow();
+    windowIntAnswer = new int[]{5,0,1,2,3};
     windowStrAnswer = new String[]{"<s>","John","joined","PETA","in"};
-    assert(listEqualsArray(test.getWindowStr(), windowStrAnswer));
+    assertArrayEquals(windowStrAnswer, test.getWordArray());
+    assertArrayEquals(windowIntAnswer, test.getIDArray());
+    
     // Roll 2
     test.rollWindow();
+    windowIntAnswer = new int[]{0,1,2,3,4};
     windowStrAnswer = new String[]{"John","joined","PETA","in","Dallas"};
-    assert(listEqualsArray(test.getWindowStr(), windowStrAnswer));
+    assertArrayEquals(windowStrAnswer, test.getWordArray());
+    assertArrayEquals(windowIntAnswer, test.getIDArray());
+    
     // Roll 3
     test.rollWindow();
+    windowIntAnswer = new int[]{1,2,3,4,6};
     windowStrAnswer = new String[]{"joined","PETA","in","Dallas","</s>"};
-    assert(listEqualsArray(test.getWindowStr(), windowStrAnswer));
+    assertArrayEquals(windowStrAnswer, test.getWordArray());
+    assertArrayEquals(windowIntAnswer, test.getIDArray());
+    
     // Roll 4
     test.rollWindow();
+    windowIntAnswer = new int[]{2,3,4,6,6};
     windowStrAnswer = new String[]{"PETA","in","Dallas","</s>","</s>"};
-    assert(listEqualsArray(test.getWindowStr(), windowStrAnswer));
+    assertArrayEquals(windowStrAnswer, test.getWordArray());
+    assertArrayEquals(windowIntAnswer, test.getIDArray());
+    
     // Roll should return false as window is complete
     assert(!test.rollWindow());
   }
-
-  @Test
-  public void testGetWindow() {
-    fail("Not yet implemented");
-  }
-
-  @Test
-  public void testGetWindowNum() {
-    fail("Not yet implemented");
-  }
-
-  @Test
-  public void testGetTargetID() {
-    fail("Not yet implemented");
-  }
-  
-  public static <T> boolean listEqualsArray(List<T> a, T[] b) {
-    if (a.size() != b.length) {
-      return false;
-    } else {
-      for (int i=0; i < b.length; i++) {
-        if (!a.get(i).equals(b[i]))
-            return false;
-      }
-    }
-    return true;
-  }
-
 }

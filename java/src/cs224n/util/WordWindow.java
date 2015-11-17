@@ -40,16 +40,6 @@ public class WordWindow {
       nextWordIndex++;
     }
   }
-  
-  /**
-   * Simple return functions for testing
-   */
-  public List<String> getWindowStr() {
-    return windowStr;
-  }
-  public List<Integer> getWindowIDs() {
-    return windowIDs;
-  }
 
   
   /**
@@ -82,30 +72,40 @@ public class WordWindow {
   }
   
   
-  /**
-   * Get the current window of words
-   */
-  public String[] getWindow() {
+
+  /** Return a list of the words in the window **/
+  public List<String> getWordList() {
+    return windowStr;
+  }
+  /** Return an array of the words in the window **/
+  public String[] getWordArray() {
     String[] out = new String[windowSize];
     for(int i=0; i < windowStr.size(); i++)
       out[i] = windowStr.get(i);
     return out;
   }
-  /**
-   * Get the current window of word ID numbers
-   */
-  public int[] getWindowNum() {
+  /** Return a list of the word IDs in the window **/
+  public List<Integer> getIDList() {
+    return windowIDs;
+  }
+  /** Return an array of the word IDs in the window **/
+  public int[] getIDArray() {
     int[] out = new int[windowSize];
     for(int i=0; i < windowStr.size(); i++)
       out[i] = windowIDs.get(i);
     return out;
   }
-  /**
-   * Get
-   */
-  public int getTargetID() {
-    String currentLabel = data.get(currentWordIndex).label;
-    return FeatureFactory.targetToNum.get(currentLabel);
+  /** Return the current target word **/
+  public String getTargetWord() {
+    return data.get(currentWordIndex).word;
+  }
+  /** Return the current target's label **/
+  public String getTargetLabel() {
+    return data.get(currentWordIndex).label;
+  }
+  /** Return the current target word **/
+  public int getTargetLabelID() {
+    return FeatureFactory.targetToNum.get(this.getTargetLabel());
   }
   
 }
