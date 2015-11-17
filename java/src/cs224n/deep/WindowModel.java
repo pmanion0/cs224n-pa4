@@ -33,8 +33,8 @@ public class WindowModel {
     WordWindow window = new WordWindow(trainData, windowSize);
     
     do {
-      int targetID = window.getTargetID();
-      int[] windowIDs = window.getWindowNum();
+      int targetID = window.getTargetLabelID();
+      int[] windowIDs = window.getIDArray();
       
       SimpleMatrix X = idsToWordVector(windowIDs);
       SimpleMatrix Y = targetToVector(targetID);
