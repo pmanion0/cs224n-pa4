@@ -10,8 +10,8 @@ import cs224n.util.WordWindow;
 public class WindowModel {
 
   public FeatureFactory ff;
-  public int wordVecSize, windowSize;
-  public int[] hiddenSizes;
+  public final int wordVecSize, windowSize;
+  public final int[] hiddenSizes;
   public NeuralNetwork model;
 
   public WindowModel(int wordVecSize, int windowSize, int[] hiddenSizes, FeatureFactory ff) {
@@ -32,13 +32,45 @@ public class WindowModel {
   public void train(List<Datum> trainData) {
     WordWindow window = new WordWindow(trainData, windowSize);
     
-    while(window.rollWindow()) {
+    do {
+      int targetID = window.getTargetID();
       int[] windowIDs = window.getWindowNum();
-    }
+      
+      SimpleMatrix X = idsToWordVector(windowIDs);
+      SimpleMatrix Y = targetToVector(targetID);
+      model.runBackprop(X, Y);
+    } while (window.rollWindow());
   }
   
   public void test(List<Datum> testData) {
     // TODO
   }
-
+  
+  
+  /**
+   * Convert a list of Word IDs into a Neural Network input vector; this
+   * concatenates the word vector representation of each word into one
+   * @param idList - List of integer word IDs
+   * @return Combined word vector, e.g. [wordVec1 wordVec2 ... wordVecN]
+   */
+  public SimpleMatrix idsToWordVector(int[] idList) {
+    SimpleMatrix windowVector = new SimpleMatrix(1, windowSize*wordVecSize);
+    for (int i=0; i < idList.length; i++) {
+      int wordID = idList[i];
+      SimpleMatrix wordVec = FeatureFactory.wordVector.extractVector(true, wordID); 
+      windowVector.insertIntoThis(0, i*wordVecSize, wordVec);
+    }
+    return new SimpleMatrix(windowVector);
+  }
+  
+  /**
+   * Convert the target ID into a one-hot encoded vector
+   * @param targetID - Entity ID of the target
+   * @return One-hot encoded SimpleMatrix vector, e.g. [0 0 0 1 0]
+   */
+  public SimpleMatrix targetToVector(int targetID) {
+    SimpleMatrix out = new SimpleMatrix(1, 5);
+    out.set(targetID, 1);
+    return out;
+  }
 }
