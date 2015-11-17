@@ -8,6 +8,8 @@ import org.ejml.simple.SimpleMatrix;
 import cs224n.util.CommandLineUtils;
 
 public class NER {
+  
+  static final String[] targetEntities = new String[]{"O","LOC","MISC","ORG","PER"}; 
 
   public static void main(String[] args) throws IOException {
     // Define the default option set and override with any command line args
@@ -32,8 +34,10 @@ public class NER {
     // Run setup for the requested model
     if (model instanceof WindowModel) {
       // This is awful - why is this in the NER class???
-      //SimpleMatrix allVecs = FeatureFactory.readWordVectors(options.get("-wordvec"));
-      //FeatureFactory.initializeVocab(options.get("-vocab"));
+      FeatureFactory.readWordVectors(options.get("-wordvec"));
+      FeatureFactory.initializeVocab(options.get("-vocab"));
+      FeatureFactory.initializeTargets(targetEntities);
+      
     } else if (model instanceof BaselineModel) {
       // Do something?
     } else {

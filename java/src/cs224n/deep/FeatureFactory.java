@@ -9,26 +9,32 @@ import org.ejml.simple.*;
 
 public class FeatureFactory {
 
+  public static SimpleMatrix wordVector;
+  public static List<Datum> trainData, testData;
+  public static HashMap<String, Integer> wordToNum = new HashMap<String, Integer>(); 
+  public static HashMap<Integer, String> numToWord = new HashMap<Integer, String>();
+  public static HashMap<String, Integer> targetToNum = new HashMap<String, Integer>();
+  public static HashMap<Integer, String> numToTarget = new HashMap<Integer, String>();
+  private static int wordCounter = 0;
 
 	private FeatureFactory() {
-
 	}
 
-	 
-	static List<Datum> trainData;
 	/** Do not modify this method **/
 	public static List<Datum> readTrainData(String filename) throws IOException {
         if (trainData==null) trainData= read(filename);
         return trainData;
 	}
 	
-	static List<Datum> testData;
 	/** Do not modify this method **/
 	public static List<Datum> readTestData(String filename) throws IOException {
         if (testData==null) testData= read(filename);
         return testData;
 	}
 	
+	/**
+	 * Read a list of example words from a training file
+	 */
 	private static List<Datum> read(String filename)
 			throws FileNotFoundException, IOException {
 	    // TODO: you'd want to handle sentence boundaries
@@ -50,16 +56,13 @@ public class FeatureFactory {
 	}
  
  
-	// Look up table matrix with all word vectors as defined in lecture with dimensionality n x |V|
-	
 	/**
 	 * Convert a densely represented file of doubles into a SimpleMatrix that can be
 	 * used as a mapping from the vocabulary to each word vector
 	 */
-	static SimpleMatrix allVecs;
 	public static SimpleMatrix readWordVectors(String vecFilename) throws IOException {
-		if (allVecs != null) {
-		  return allVecs;
+		if (wordVector != null) {
+		  return wordVector;
 		}
 		double[][] wordVec = initArrayFromFile(vecFilename);
 		BufferedReader reader = new BufferedReader(new FileReader(vecFilename));
@@ -68,8 +71,8 @@ public class FeatureFactory {
       fillDoubleWithLine(line, wordVec[i]);
     }
     reader.close();
-    allVecs = new SimpleMatrix(wordVec); 
-		return allVecs;
+    wordVector = new SimpleMatrix(wordVec); 
+		return wordVector;
 	}
 	
 	/**
@@ -103,14 +106,12 @@ public class FeatureFactory {
       storage[i] = Double.valueOf(strVals[i]);
   }
 	
-
-	
-	// might be useful for word to number lookups, just access them directly in WindowModel
-	public static HashMap<String, Integer> wordToNum = new HashMap<String, Integer>(); 
-	public static HashMap<Integer, String> numToWord = new HashMap<Integer, String>();
-	private static int wordCounter = 0;
-
-	public static HashMap<String, Integer> initializeVocab(String vocabFilename) throws IOException {
+  /**
+   * Create useful map functions based on a providede vocabulary file
+   * @param vocabFilename - Full path to a vocabulary text file
+   * @return 
+   */
+	public static void initializeVocab(String vocabFilename) throws IOException {
 	  BufferedReader in = new BufferedReader(new FileReader(vocabFilename));
     for (String word = in.readLine(); word != null; word = in.readLine()) {
       // Skip any empty lines or words that have already appeared
@@ -122,15 +123,16 @@ public class FeatureFactory {
       wordCounter++;
     }
     in.close();
-		return wordToNum;
 	}
- 
-
-
-
-
-
-
-
-
+	
+	/**
+	 * Initialize mappings between target string and integer representations
+	 * @param targetList - List of all possible target variables
+	 */
+	public static void initializeTargets(String[] targetList) {
+    for (int i=0; i < targetList.length; i++) {
+      targetToNum.put(targetList[i], i);
+      numToTarget.put(i, targetList[i]);
+    }
+	}
 }
