@@ -24,6 +24,7 @@ public class WordWindow {
     this.windowSize = windowSize;
     this.windowStr = new LinkedList<String>();
     this.windowIDs = new LinkedList<Integer>();
+    this.data = data;
     this.currentWordIndex = 0;
     
     // Pad with start tags
@@ -38,6 +39,16 @@ public class WordWindow {
       windowIDs.add(FeatureFactory.wordToNum.get(newWord));
       nextWordIndex++;
     }
+  }
+  
+  /**
+   * Simple return functions for testing
+   */
+  public List<String> getWindowStr() {
+    return windowStr;
+  }
+  public List<Integer> getWindowIDs() {
+    return windowIDs;
   }
 
   
