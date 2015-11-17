@@ -49,24 +49,31 @@ public class WordWindow {
   public boolean rollWindow() {
     boolean result;
     // Remove the oldest word on the queue
-    windowStr.remove(0);
+    currentWordIndex++;
     
-    if (nextWordIndex < data.size()) {
-      // Add the next word if its within the data
-      String newWord = data.get(nextWordIndex).word;
-      windowStr.add(newWord);
-      windowIDs.add(FeatureFactory.wordToNum.get(newWord));
-      result = true;
-    } else if (currentWordIndex < data.size()) {
-      // Pad the back with an END tag if current word is within the data
-      windowStr.add(endTag);
+    // Move the window if the new current word is within the data
+    if (currentWordIndex < data.size()) {
+      // Remove the oldest words on the queue
+      windowStr.remove(0);
+      windowIDs.remove(0);
+      
+      if (nextWordIndex < data.size()) {
+        // If the next word is in the data, add it to the queue
+        String newWord = data.get(nextWordIndex).word;
+        windowStr.add(newWord);
+        windowIDs.add(FeatureFactory.wordToNum.get(newWord));
+      } else {
+        // Otherwise, pad the back with an END tag
+        windowStr.add(endTag);
+        windowIDs.add(FeatureFactory.wordToNum.get(endTag));
+      }
       result = true;
     } else {
       // Otherwise, return FALSE as we reached the end of the data
       result = false;
     }
+    
     // Increment the counters and return a success
-    currentWordIndex++;
     nextWordIndex++;
     return result;
   }
