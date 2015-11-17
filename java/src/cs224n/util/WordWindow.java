@@ -89,5 +89,12 @@ public class WordWindow {
       out[i] = windowIDs.get(i);
     return out;
   }
+  /**
+   * Get
+   */
+  public int getTargetID() {
+    String currentLabel = data.get(currentWordIndex).label;
+    return FeatureFactory.targetToNum.get(currentLabel);
+  }
   
 }
