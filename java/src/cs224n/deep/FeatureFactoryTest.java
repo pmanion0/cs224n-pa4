@@ -60,7 +60,8 @@ public class FeatureFactoryTest {
   @Test
   public void testInitializeVocab() {
     try {
-      HashMap<String, Integer> w2n = FeatureFactory.initializeVocab("../testdata/vocab.txt");
+      FeatureFactory.initializeVocab("../testdata/vocab.txt");
+      HashMap<String, Integer> w2n = FeatureFactory.wordToNum;
       HashMap<Integer, String> n2w = FeatureFactory.numToWord;
       assert(w2n.size() == 6 && n2w.size() == 6);
       assert(w2n.get("a") == 0 && w2n.get("short") == 1 && w2n.get("vocab") == 2 &&
