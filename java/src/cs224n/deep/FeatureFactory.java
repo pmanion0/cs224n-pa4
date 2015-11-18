@@ -1,8 +1,11 @@
 package cs224n.deep;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.*;
 import org.ejml.simple.*;
 
@@ -140,5 +143,29 @@ public class FeatureFactory {
       targetToNum.put(targetList[i], i);
       numToTarget.put(i, targetList[i]);
     }
+	}
+	
+	
+	/**
+	 * Output a scored file using the input data, the predictions, and an output file path
+	 * @param data - List of Datum that were scored
+	 * @param predictions - Predicted entities corresponding to every datum in data
+	 * @param outfile - Output file that will be written to
+	 */
+	public static void outputScoringToFile(List<Datum> data, List<String> predictions, String outfile) {
+	  PrintWriter out;
+    try {
+      out =  new PrintWriter(new BufferedWriter(new FileWriter(outfile)));
+    } catch (Exception e) {
+      System.err.println("ERROR: Cannot open output file");
+      return;
+    }
+    
+    for (int i=0; i < data.size(); i++) {
+      Datum d = data.get(i);
+      String predLabel = predictions.get(i);
+      out.println(d.word + "\t" + d.label + "\t" + predLabel);
+    }
+    out.close();
 	}
 }
