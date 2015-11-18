@@ -54,9 +54,10 @@ public class BaselineModel implements NERModel {
       labelPredicted = trainNER.get(word);
     } else {
       // Randomly assign label if we did not see it in training
-      int size = FeatureFactory.targetToNum.size();
-      int randomIndx = getRandomInt(0, size-1);
-      labelPredicted = FeatureFactory.numToTarget.get(randomIndx);
+      //int size = FeatureFactory.targetToNum.size();
+      //int randomIndx = getRandomInt(0, size-1);
+      //labelPredicted = FeatureFactory.numToTarget.get(randomIndx);
+      labelPredicted = "O";
     }
     return labelPredicted;
   }
