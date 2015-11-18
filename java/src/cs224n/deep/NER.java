@@ -31,7 +31,9 @@ public class NER {
     
     // Run setup for the requested model
     if (model instanceof WindowModel) {
-      // This is awful - why is this in the NER class???
+      // All of this is awful!
+      WindowModel windowmodel = (WindowModel) model;
+      windowmodel.setupWindowModel(50, 5, new int[]{20});
       FeatureFactory.readWordVectors(options.get("-wordvec"));
       FeatureFactory.initializeVocab(options.get("-vocab"));      
     } else if (model instanceof BaselineModel) {

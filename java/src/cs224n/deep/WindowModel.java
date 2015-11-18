@@ -10,12 +10,14 @@ import cs224n.util.WordWindow;
 
 public class WindowModel implements NERModel {
 
-  public FeatureFactory ff;
-  public final int wordVecSize, windowSize;
-  public final int[] hiddenSizes;
+  public int wordVecSize, windowSize;
+  public int[] hiddenSizes;
   public NeuralNetwork model;
+  
+  public WindowModel() {
+  }
 
-  public WindowModel(int wordVecSize, int windowSize, int[] hiddenSizes, FeatureFactory ff) {
+  public void setupWindowModel(int wordVecSize, int windowSize, int[] hiddenSizes) {
     if (windowSize % 2 == 0) {
       System.err.println("ERROR: I'm sorry Dave. I'm afraid I can't let you use even windowSizes.");
       windowSize = 3;
@@ -23,7 +25,6 @@ public class WindowModel implements NERModel {
     this.wordVecSize = wordVecSize;
     this.windowSize = windowSize;
     this.hiddenSizes = hiddenSizes;
-    this.ff = ff;
     model = new NeuralNetwork(wordVecSize*windowSize, hiddenSizes, 5);
   }
 
@@ -51,7 +52,7 @@ public class WindowModel implements NERModel {
       int[] windowIDs = window.getIDArray();
       SimpleMatrix X = idsToWordVector(windowIDs);
       int pred = model.getBestOutputClass(X);
-      String predStr = ff.numToTarget.get(pred);
+      String predStr = FeatureFactory.numToTarget.get(pred);
       predictions.add(predStr);
     } while (window.rollWindow());
     
