@@ -1,7 +1,8 @@
 package cs224n.deep;
 
 import java.util.List;
-
+import java.util.Random;
+import jdk.nashorn.internal.ir.LiteralNode.ArrayLiteralNode.ArrayUnit;
 import org.ejml.simple.SimpleMatrix;
 
 public class NeuralNetwork {
@@ -9,7 +10,14 @@ public class NeuralNetwork {
   private final int inputDim, outputDim;
   private final int[] hiddenDims;
   private int epochCount = 0;
-  private List<SimpleMatrix> parameters;
+  // weight matrix for non-final layer
+  private List<SimpleMatrix> W;
+  // weight matrix for final layer
+  private SimpleMatrix U;
+  // bias for non-final layer
+  private List<SimpleMatrix> b1;
+  // bias for final layer
+  private SimpleMatrix b2;
   private double lambda = 0, alpha = 1e-4;
   
   public NeuralNetwork(int inputDim, int[] hiddenDims, int outputDim) {
@@ -38,9 +46,29 @@ public class NeuralNetwork {
    */
   public void initializeMatrices() {
     // Add a SimpleMatrix to parameters list for every layer of the network
+  	Random rand = new Random();
+  	int fanIn = inputDim;
+  	int layer = 0;
+  	double epsilon;
+
+  	// initialize non-final layer
     for (int hiddenDim : hiddenDims) {
       // [Input:Hidden#1] [Hidden#1:Hidden#2] ... [Hidden#n:Output]
+    	int fanOut = hiddenDim;
+    	epsilon = Math.sqrt(6) / Math.sqrt(fanIn + fanOut);
+    	W.add(layer, SimpleMatrix.random(fanOut, fanIn, -epsilon, epsilon, rand)); 
+    	// initialize to 0;
+    	b1.add(layer, new SimpleMatrix(fanOut, 1));
+    	layer++;
+      // update fanIn
+    	fanIn = hiddenDim;
     }
+    
+    // initialize final layer
+    int lastHiddenDim = hiddenDims[hiddenDims.length - 1];
+    double epsilonLast = Math.sqrt(6) / Math.sqrt(outputDim + lastHiddenDim);
+    U = SimpleMatrix.random(outputDim, lastHiddenDim, -epsilonLast, epsilonLast, rand);
+    b2 = new SimpleMatrix(outputDim,1);
   }
   
   
