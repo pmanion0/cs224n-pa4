@@ -14,10 +14,7 @@ public class WindowModel implements NERModel {
   public int[] hiddenSizes;
   public NeuralNetwork model;
   
-  public WindowModel() {
-  }
-
-  public void setupWindowModel(int wordVecSize, int windowSize, int[] hiddenSizes) {
+  public WindowModel(int wordVecSize, int windowSize, int[] hiddenSizes) {
     if (windowSize % 2 == 0) {
       System.err.println("ERROR: I'm sorry Dave. I'm afraid I can't let you use even windowSizes.");
       windowSize = 3;

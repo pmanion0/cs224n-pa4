@@ -22,31 +22,39 @@ public class NER {
     printOptions(options);
 
     // Convert the model name into an instance of the specified class
-    NERModel model = getModelClass(options.get("-model"));
-    System.out.println("Using parser: " + model);
+    System.out.println("Using Model: " + options.get("-model"));
 
     // Read in the requested data files and initialize necessary data structures
     List<Datum> trainData = FeatureFactory.readTrainData(options.get("-train"));
     List<Datum> testData = FeatureFactory.readTestData(options.get("-test"));
     
     // Run setup for the requested model
-    if (model instanceof WindowModel) {
-      // All of this is awful!
-      WindowModel windowmodel = (WindowModel) model;
-      windowmodel.setupWindowModel(50, 5, new int[]{20});
+    if (options.get("-model").equals("cs224n.deep.WindowModel")) {
+      // RUN THE WINDOWMODEL
+      WindowModel model = new WindowModel(50, 5, new int[]{20});
+
       FeatureFactory.readWordVectors(options.get("-wordvec"));
-      FeatureFactory.initializeVocab(options.get("-vocab"));      
-    } else if (model instanceof BaselineModel) {
-      // Do something?
-    } else {
-      // Do something?
+      FeatureFactory.initializeVocab(options.get("-vocab"));
+      
+      model.train(trainData);
+      System.out.println("Training Complete.");
+      
+      model.test(testData, options.get("-outfile"));
+      System.out.println("Testing Complete.");
     }
-    
-    model.train(trainData);
-    System.out.println("Training Complete.");
-    
-    model.test(testData, options.get("-outfile"));
-    System.out.println("Testing Complete.");
+    else if (options.get("-model").equals("cs224n.deep.BaselineModel")) {
+      // RUN THE BASELINE MODEL
+      BaselineModel model = new BaselineModel();
+      
+      model.train(trainData);
+      System.out.println("Training Complete.");
+      
+      model.test(testData, options.get("-outfile"));
+      System.out.println("Testing Complete.");
+    }
+    else {
+      System.err.println("ERROR: Model type not recognized");
+    }
   }
   
   
