@@ -1,5 +1,6 @@
 package cs224n.deep;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -7,7 +8,7 @@ import org.ejml.simple.SimpleMatrix;
 
 import cs224n.util.WordWindow;
 
-public class WindowModel {
+public class WindowModel implements NERModel {
 
   public FeatureFactory ff;
   public final int wordVecSize, windowSize;
@@ -42,8 +43,19 @@ public class WindowModel {
     } while (window.rollWindow());
   }
   
-  public void test(List<Datum> testData) {
-    // TODO
+  public void test(List<Datum> testData, String outfile) {
+    List<String> predictions = new ArrayList<String>();
+    WordWindow window = new WordWindow(testData, windowSize);
+    
+    do {
+      int[] windowIDs = window.getIDArray();
+      SimpleMatrix X = idsToWordVector(windowIDs);
+      int pred = model.getBestOutputClass(X);
+      String predStr = ff.numToTarget.get(pred);
+      predictions.add(predStr);
+    } while (window.rollWindow());
+    
+    FeatureFactory.outputScoringToFile(testData, predictions, outfile);
   }
   
   
