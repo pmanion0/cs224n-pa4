@@ -17,8 +17,14 @@ public class FeatureFactory {
   public static HashMap<Integer, String> numToTarget = new HashMap<Integer, String>();
   private static int wordCounter = 0;
 
+  static {
+    String[] targetEntities = new String[]{"O","LOC","MISC","ORG","PER"}; 
+    FeatureFactory.initializeTargets(targetEntities);
+  }
+  
 	private FeatureFactory() {
 	}
+
 
 	/** Do not modify this method **/
 	public static List<Datum> readTrainData(String filename) throws IOException {

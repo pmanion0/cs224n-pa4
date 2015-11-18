@@ -9,8 +9,6 @@ import cs224n.util.CommandLineUtils;
 
 public class NER {
   
-  static final String[] targetEntities = new String[]{"O","LOC","MISC","ORG","PER"}; 
-
   public static void main(String[] args) throws IOException {
     // Define the default option set and override with any command line args
     Map<String, String> options = new HashMap<String, String>();
@@ -35,9 +33,7 @@ public class NER {
     if (model instanceof WindowModel) {
       // This is awful - why is this in the NER class???
       FeatureFactory.readWordVectors(options.get("-wordvec"));
-      FeatureFactory.initializeVocab(options.get("-vocab"));
-      FeatureFactory.initializeTargets(targetEntities);
-      
+      FeatureFactory.initializeVocab(options.get("-vocab"));      
     } else if (model instanceof BaselineModel) {
       // Do something?
     } else {
