@@ -71,15 +71,72 @@ public class NeuralNetwork {
     b2 = new SimpleMatrix(outputDim,1);
   }
   
+  /**
+   * Return tanh of input matrix z
+   * @param z - input SimpleMatrix
+   * @return a Simple Matrix of tanh(z)
+   */
+  public SimpleMatrix tanh(SimpleMatrix z) {
+  	int numOfRows = z.numRows(), numOfCols = z.numCols();
+  	SimpleMatrix tanhOfZ = new SimpleMatrix(numOfRows, numOfCols);
+  	for (int i = 0; i < numOfRows; i++) {
+  		for (int j = 0; j < numOfCols; j++) {
+  			tanhOfZ.set(numOfRows, numOfCols, Math.tanh(z.get(i, j)));
+  		} // end j
+  	} // end i
+  	return tanhOfZ;
+  }
+  
+  
+  /**
+   * Return softmax of input matrix z
+   * 
+   */
+  public SimpleMatrix softmax(SimpleMatrix z) {
+  	// check input dimension of z
+  	if (!(z.numRows() == outputDim && z.numCols() == 1)) {
+  		System.err.println("ERROR: Dimenson error for computing softmax");
+  	}
+  	
+  	SimpleMatrix probs = new SimpleMatrix(outputDim, 1);
+  	double bottom = 0;
+  	
+  	for (int i = 0; i < outputDim; i++) {
+  		bottom += Math.exp(z.get(i,0));
+  	}
+  	for (int i = 0; i < outputDim; i++) {
+  		probs.set(i, 0, Math.exp(z.get(i,0)) / bottom);
+  	}
+  	
+  	return probs;
+  }
   
   /**
    * Return the scores for each output class after scoring the an input X
    * @param X - input array of dimension {Window Size} x {Word Vector Dimension}
    * @return array of scores for each possible output class
    */
+  // feed forward 
   public double[] score(SimpleMatrix X) {
     // Run X through the entire network and return the score for each output class
-    return null;
+    // iterate through weight matrix W
+  	int numOfLayers = W.size();
+  	SimpleMatrix Z_i = W.get(0).mult(X).plus(b1.get(0)), Z_i_next;
+  	
+  	// h = f(wx + b1) 
+  	for (int i = 0; i < numOfLayers; i++) {
+  		Z_i_next = tanh(W.get(i).mult(Z_i).plus(b1.get(i)));
+  		Z_i = Z_i_next;
+  	}  
+  	
+  	SimpleMatrix probsMatrix = softmax(U.mult(Z_i).plus(b2));
+  	double[] probs = new double[outputDim];
+  	
+  	for ( int i = 0; i < outputDim; i++) {
+  		probs[i] = probsMatrix.get(i, 0);
+  	}
+  	
+  	return probs;
   }
   
   
