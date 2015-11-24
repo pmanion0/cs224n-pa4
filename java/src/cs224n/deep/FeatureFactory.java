@@ -11,13 +11,15 @@ import org.ejml.simple.*;
 
 
 public class FeatureFactory {
+  
+  public static String UNKNOWN_WORD = "UUUNKKK";
 
   public static SimpleMatrix wordVector;
   public static List<Datum> trainData, testData;
-  public static HashMap<String, Integer> wordToNum = new HashMap<String, Integer>(); 
-  public static HashMap<Integer, String> numToWord = new HashMap<Integer, String>();
-  public static HashMap<String, Integer> targetToNum = new HashMap<String, Integer>();
-  public static HashMap<Integer, String> numToTarget = new HashMap<Integer, String>();
+  private static HashMap<String, Integer> wordToNum = new HashMap<String, Integer>(); 
+  private static HashMap<String, Integer> targetToNum = new HashMap<String, Integer>();
+  private static HashMap<Integer, String> numToWord = new HashMap<Integer, String>();
+  private static HashMap<Integer, String> numToTarget = new HashMap<Integer, String>();
   private static int wordCounter = 0;
 
   static {
@@ -142,6 +144,32 @@ public class FeatureFactory {
 	}
 	
 	/**
+	 * Return the ID for a number (using the unknown word if needed)
+	 */
+	public static int getWordNum(String word) {
+	  if (wordToNum.containsKey(word))
+	    return wordToNum.get(word);
+	  else if (wordToNum.containsKey(UNKNOWN_WORD))
+	    return wordToNum.get(UNKNOWN_WORD);
+	  else {
+	    System.err.println("WARN: Cannot find ID for unknown word - defaulting to 0");
+	    return 0; // Hope the first word is unknown
+	  }
+	}
+	
+	/**
+	 * Return the ID for a target string (throws a nasty result if unknown)
+	 */
+	public static int getTargetNum(String target) {
+	  if (targetToNum.containsKey(target))
+	    return targetToNum.get(target);
+	  else {
+	    System.err.println("ERROR: Target unknown");
+	    return -1;
+	  }
+	}
+	
+	/**
 	 * Initialize mappings between target string and integer representations
 	 * @param targetList - List of all possible target variables
 	 */
@@ -174,4 +202,16 @@ public class FeatureFactory {
     }
     out.close();
 	}
+	
+	/**
+	 * 
+	 */
+	public static void setUnknownWord(String s) {
+	  UNKNOWN_WORD = s;
+	}
+	
+	/** Return the entire wordToNum HashMap - use getWordNum(String) for individual word lookups */
+	public static HashMap<String, Integer> getWordToNum() { return wordToNum; }
+	/** Return the entire numToWord HashMap- use getTargetNum(String) for individual target lookups */
+	public static HashMap<Integer, String> getNumToWord() { return numToWord; }
 }

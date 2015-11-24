@@ -30,13 +30,13 @@ public class WordWindow {
     // Pad with start tags
     for (int i=0; i < tailSize; i++) {
       windowStr.add(startTag);
-      windowIDs.add(FeatureFactory.wordToNum.get(startTag));
+      windowIDs.add(FeatureFactory.getWordNum(startTag));
     }
     // Fill the remaining spots with words
     for (int j=0; j < windowSize-tailSize; j++) {
       String newWord = data.get(j).word;
       windowStr.add(newWord);
-      windowIDs.add(FeatureFactory.wordToNum.get(newWord));
+      windowIDs.add(FeatureFactory.getWordNum(newWord));
       nextWordIndex++;
     }
   }
@@ -61,11 +61,11 @@ public class WordWindow {
         // If the next word is in the data, add it to the queue
         String newWord = data.get(nextWordIndex).word;
         windowStr.add(newWord);
-        windowIDs.add(FeatureFactory.wordToNum.get(newWord));
+        windowIDs.add(FeatureFactory.getWordNum(newWord));
       } else {
         // Otherwise, pad the back with an END tag
         windowStr.add(endTag);
-        windowIDs.add(FeatureFactory.wordToNum.get(endTag));
+        windowIDs.add(FeatureFactory.getWordNum(endTag));
       }
       result = true;
     } else {
@@ -112,7 +112,7 @@ public class WordWindow {
   }
   /** Return the current target word **/
   public int getTargetLabelID() {
-    return FeatureFactory.targetToNum.get(this.getTargetLabel());
+    return FeatureFactory.getTargetNum(this.getTargetLabel());
   }
   
 }
