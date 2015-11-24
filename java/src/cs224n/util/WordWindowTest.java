@@ -3,6 +3,7 @@ package cs224n.util;
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.junit.BeforeClass;
@@ -30,13 +31,14 @@ public class WordWindowTest {
     example.add(Dallas);
     
     // Initialize necessary book-keeping functions in FeatureFactory
-    FeatureFactory.wordToNum.put("John",   0);
-    FeatureFactory.wordToNum.put("joined", 1);
-    FeatureFactory.wordToNum.put("PETA",   2);
-    FeatureFactory.wordToNum.put("in",     3);
-    FeatureFactory.wordToNum.put("Dallas", 4);
-    FeatureFactory.wordToNum.put("<s>",    5);
-    FeatureFactory.wordToNum.put("</s>",   6);
+    HashMap<String,Integer> wtn = FeatureFactory.getWordToNum();
+    wtn.put("John",   0);
+    wtn.put("joined", 1);
+    wtn.put("PETA",   2);
+    wtn.put("in",     3);
+    wtn.put("Dallas", 4);
+    wtn.put("<s>",    5);
+    wtn.put("</s>",   6);
     FeatureFactory.initializeTargets(new String[]{"O","LOC","MISC","ORG","PER"});
   }
 
