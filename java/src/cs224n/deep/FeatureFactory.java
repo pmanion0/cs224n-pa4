@@ -164,10 +164,21 @@ public class FeatureFactory {
 	  if (targetToNum.containsKey(target))
 	    return targetToNum.get(target);
 	  else {
-	    System.err.println("ERROR: Target unknown");
+	    System.err.println("ERROR: Target string unknown");
 	    return -1;
 	  }
 	}
+	
+	/**
+	 * Get the string representation of a given target ID
+	 */
+	public static String getTargetName(int id) {
+	  if (numToTarget.containsKey(id))
+	    return numToTarget.get(id);
+	  else 
+	    return "TARGET_CLASS_UNKNOWN";
+	}
+	
 	
 	/**
 	 * Initialize mappings between target string and integer representations

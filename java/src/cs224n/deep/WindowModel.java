@@ -49,7 +49,7 @@ public class WindowModel implements NERModel {
       int[] windowIDs = window.getIDArray();
       SimpleMatrix X = idsToWordVector(windowIDs);
       int pred = model.getBestOutputClass(X);
-      String predStr = FeatureFactory.numToTarget.get(pred);
+      String predStr = FeatureFactory.getTargetName(pred);
       predictions.add(predStr);
     } while (window.rollWindow());
     
