@@ -2,7 +2,6 @@ package cs224n.deep;
 
 import java.util.List;
 import java.util.Random;
-import jdk.nashorn.internal.ir.LiteralNode.ArrayLiteralNode.ArrayUnit;
 import org.ejml.simple.SimpleMatrix;
 
 public class NeuralNetwork {
