@@ -12,7 +12,7 @@ import org.ejml.simple.*;
 
 public class FeatureFactory {
   
-  public static String UNKNOWN_WORD = "UUUNKKK";
+  public static String UNKNOWN_WORD = "UUUNKKK".toLowerCase();
 
   public static SimpleMatrix wordVector;
   public static List<Datum> trainData, testData;
@@ -132,6 +132,7 @@ public class FeatureFactory {
 	public static void initializeVocab(String vocabFilename) throws IOException {
 	  BufferedReader in = new BufferedReader(new FileReader(vocabFilename));
     for (String word = in.readLine(); word != null; word = in.readLine()) {
+      word = word.toLowerCase();
       // Skip any empty lines or words that have already appeared
       if (word.trim().length() == 0 || wordToNum.containsKey(word)) {
         continue;
@@ -147,6 +148,7 @@ public class FeatureFactory {
 	 * Return the ID for a number (using the unknown word if needed)
 	 */
 	public static int getWordNum(String word) {
+	  word = word.toLowerCase();
 	  if (wordToNum.containsKey(word))
 	    return wordToNum.get(word);
 	  else if (wordToNum.containsKey(UNKNOWN_WORD))
