@@ -27,11 +27,12 @@ public class FeatureFactoryTest {
   }
 
   @Test
-  public void testInitArrayFromFile() {
+  public void testRowColumnCount() {
     try {
-      double[][] theArray = FeatureFactory.initArrayFromFile("../testdata/initarrayfromfile.txt");
-      assert(theArray.length == 11); // Row Count
-      assert(theArray.length == 8); // Column Count
+      int rowCount = FeatureFactory.countLines("../testdata/initarrayfromfile.txt");
+      int colCount = FeatureFactory.countColumns("../testdata/initarrayfromfile.txt");
+      assert(rowCount == 11);
+      assert(colCount == 8);
     } catch (IOException e) {
       fail("IO Exception");
     }
@@ -61,13 +62,27 @@ public class FeatureFactoryTest {
   public void testInitializeVocab() {
     try {
       FeatureFactory.initializeVocab("../testdata/vocab.txt");
-      HashMap<String, Integer> w2n = FeatureFactory.wordToNum;
-      HashMap<Integer, String> n2w = FeatureFactory.numToWord;
-      assert(w2n.size() == 6 && n2w.size() == 6);
+      HashMap<String, Integer> w2n = FeatureFactory.getWordToNum();
+      HashMap<Integer, String> n2w = FeatureFactory.getNumToWord();
+      assert(w2n.size() == 7 && n2w.size() == 7);
       assert(w2n.get("a") == 0 && w2n.get("short") == 1 && w2n.get("vocab") == 2 &&
-             w2n.get("to") == 3 && w2n.get("check") == 4 && w2n.get("functions") == 6);
+             w2n.get("to") == 3 && w2n.get("check") == 4 && w2n.get("UUUNKKK") == 6 &&
+             w2n.get("functions") == 7);
       assert(n2w.get(0) == "a" && n2w.get(1) == "short" && n2w.get(2) == "vocab" &&
-             n2w.get(3) == "to" && n2w.get(4) == "check" && n2w.get(6) == "functions");
+             n2w.get(3) == "to" && n2w.get(4) == "check" && n2w.get(6) == "UUUNKKK" &&
+             n2w.get(7) == "functions");
+    } catch (IOException e) {
+      fail("IO Exception");
+    }
+  }
+  
+  @Test
+  public void testGetWordNum() {
+    try {
+      FeatureFactory.initializeVocab("../testdata/vocab.txt");
+      FeatureFactory.setUnknownWord("UNK");
+      int id = FeatureFactory.getWordNum("()#$UWEOIFJWE)(#J!@");
+      assert(id == 6);
     } catch (IOException e) {
       fail("IO Exception");
     }

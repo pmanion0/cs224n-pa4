@@ -3,4 +3,5 @@ short
 vocab
 to
 check
+UNK
 functions
