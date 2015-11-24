@@ -12,7 +12,8 @@ public class WindowModel implements NERModel {
 
   public int wordVecSize, windowSize;
   public int[] hiddenSizes;
-  public NeuralNetwork model;
+  //public NeuralNetwork model;
+  public FakeNeuralNetwork model;
   
   public WindowModel(int wordVecSize, int windowSize, int[] hiddenSizes) {
     if (windowSize % 2 == 0) {
@@ -22,7 +23,8 @@ public class WindowModel implements NERModel {
     this.wordVecSize = wordVecSize;
     this.windowSize = windowSize;
     this.hiddenSizes = hiddenSizes;
-    model = new NeuralNetwork(wordVecSize*windowSize, hiddenSizes, 5);
+    //model = new NeuralNetwork(wordVecSize*windowSize, hiddenSizes, 5);
+    model = new FakeNeuralNetwork();
   }
 
   /**
