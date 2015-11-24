@@ -73,27 +73,32 @@ public class FeatureFactory {
 		if (wordVector != null) {
 		  return wordVector;
 		}
-		double[][] wordVec = initArrayFromFile(vecFilename);
+		
+		int rowCount = countLines(vecFilename);
+		int colCount = countColumns(vecFilename);
+		double[][] wordVec = new double[rowCount][colCount];
+		
+		// Read in the standard vocabulary file
 		BufferedReader reader = new BufferedReader(new FileReader(vecFilename));
-    for (int i=0; i < wordVec.length; i++) {
+    for (int i=0; i < rowCount; i++) {
       String line = reader.readLine();
       fillDoubleWithLine(line, wordVec[i]);
     }
     reader.close();
+    
     wordVector = new SimpleMatrix(wordVec); 
 		return wordVector;
 	}
 	
-	/**
-	 * Initialize a double array based on the columns/rows in a file. This assumes
-	 * every row is non-empty, has the same number of columns, and is dense.
-	 */
-	public static double[][] initArrayFromFile(String filename) throws IOException {
-	  BufferedReader reader = new BufferedReader(new FileReader(filename));
+  /**
+   * Count the number of columns in a file *based on the first row*
+   */
+  public static int countColumns(String filename) throws IOException {
+    BufferedReader reader = new BufferedReader(new FileReader(filename));
     int colCount = reader.readLine().split(" ").length;
-    int rowCount = countLines(filename);
-    return new double[rowCount][colCount];
-	}
+    reader.close();
+    return colCount;
+  }
 	
   /**
    * Count the number of lines in a file
@@ -101,8 +106,10 @@ public class FeatureFactory {
   public static int countLines(String filename) throws IOException {
     int lineCount = 0;
     BufferedReader reader = new BufferedReader(new FileReader(filename));
-    while (reader.readLine() != null)
+    while (reader.readLine() != null) {
       lineCount++;
+    }
+    reader.close();
     return lineCount;
   }
 	
@@ -144,7 +151,6 @@ public class FeatureFactory {
       numToTarget.put(i, targetList[i]);
     }
 	}
-	
 	
 	/**
 	 * Output a scored file using the input data, the predictions, and an output file path
