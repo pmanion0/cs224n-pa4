@@ -62,9 +62,9 @@ And
 \begin{align}
 \frac{\partial J}{ \partial U} = a^2 \delta^3 = tanh(Wx + b^{(1)}) (p_{\theta} - y) \\
 \frac{\partial J}{ \partial W} = a^1 \delta^2 = LU^T(p_{\theta} - y) \odot tanh'(Wx + b^{(1)}) \\
+\frac{\partial J}{ \partial L} = a^0 \delta^1 = W^T U^T (p_{\theta} - y) \odot tanh'(Wx + b^{(1)})  \\
 \frac{\partial J}{ \partial b^{(2)}} = \delta^3 = p_{\theta} - y \\
-\frac{\partial J}{ \partial b^{(1)}} = \delta^2 = U^T(p_{\theta} - y) \odot tanh'(Wx + b^{(1)}) \\
-\frac{\partial J}{ \partial L} = W^T U^T (p_{\theta} - y) \odot tanh'(Wx + b^{(1)})  
+\frac{\partial J}{ \partial b^{(1)}} = \delta^2 = U^T(p_{\theta} - y) \odot tanh'(Wx + b^{(1)}) 
 \end{align}
 \end{subequations}
 
