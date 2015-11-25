@@ -15,11 +15,8 @@ public class FeatureFactory {
   public static String unknownWord = "UUUNKKK".toLowerCase();
   public static SimpleMatrix wordVector;
   public static List<Datum> trainData, testData;
-  private static HashMap<String, Integer> wordToNum = new HashMap<String, Integer>(); 
-  private static HashMap<String, Integer> targetToNum = new HashMap<String, Integer>();
-  private static HashMap<Integer, String> numToWord = new HashMap<Integer, String>();
-  private static HashMap<Integer, String> numToTarget = new HashMap<Integer, String>();
-  private static int wordCounter = 0;
+  private static HashMap<String, Integer> wordToNum, targetToNum;
+  private static HashMap<Integer, String> numToWord, numToTarget;
 
   static {
     String[] targetEntities = new String[]{"O","LOC","MISC","ORG","PER"}; 
@@ -124,11 +121,17 @@ public class FeatureFactory {
   }
 	
   /**
-   * Create useful map functions based on a providede vocabulary file
+   * Create useful map functions based on a provided vocabulary file
    * @param vocabFilename - Full path to a vocabulary text file
    * @return 
    */
-	public static void initializeVocab(String vocabFilename) throws IOException {
+	public static void initializeVocab(String vocabFilename, String unkWord) throws IOException {
+	  int wordCounter = 0;
+	  wordToNum = new HashMap<String, Integer>(); 
+	  numToWord = new HashMap<Integer, String>();
+	  
+	  setUnknownWord(unkWord);
+	  
 	  BufferedReader in = new BufferedReader(new FileReader(vocabFilename));
     for (String word = in.readLine(); word != null; word = in.readLine()) {
       word = word.toLowerCase();
@@ -186,6 +189,9 @@ public class FeatureFactory {
 	 * @param targetList - List of all possible target variables
 	 */
 	public static void initializeTargets(String[] targetList) {
+	  targetToNum = new HashMap<String, Integer>();
+    numToTarget = new HashMap<Integer, String>();
+    
     for (int i=0; i < targetList.length; i++) {
       targetToNum.put(targetList[i], i);
       numToTarget.put(i, targetList[i]);
