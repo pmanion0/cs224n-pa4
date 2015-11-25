@@ -220,7 +220,7 @@ public class FeatureFactory {
 	 * 
 	 */
 	public static void setUnknownWord(String s) {
-	  UNKNOWN_WORD = s;
+	  UNKNOWN_WORD = s.toLowerCase();
 	}
 	
 	/** Return the entire wordToNum HashMap - use getWordNum(String) for individual word lookups */
