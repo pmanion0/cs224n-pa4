@@ -12,8 +12,7 @@ import org.ejml.simple.*;
 
 public class FeatureFactory {
   
-  public static String UNKNOWN_WORD = "UUUNKKK".toLowerCase();
-
+  public static String unknownWord = "UUUNKKK".toLowerCase();
   public static SimpleMatrix wordVector;
   public static List<Datum> trainData, testData;
   private static HashMap<String, Integer> wordToNum = new HashMap<String, Integer>(); 
@@ -151,8 +150,8 @@ public class FeatureFactory {
 	  word = word.toLowerCase();
 	  if (wordToNum.containsKey(word))
 	    return wordToNum.get(word);
-	  else if (wordToNum.containsKey(UNKNOWN_WORD))
-	    return wordToNum.get(UNKNOWN_WORD);
+	  else if (wordToNum.containsKey(unknownWord))
+	    return wordToNum.get(unknownWord);
 	  else {
 	    System.err.println("WARN: Cannot find ID for unknown word - defaulting to 0");
 	    return 0; // Hope the first word is unknown
@@ -220,7 +219,7 @@ public class FeatureFactory {
 	 * 
 	 */
 	public static void setUnknownWord(String s) {
-	  UNKNOWN_WORD = s.toLowerCase();
+	  unknownWord = s.toLowerCase();
 	}
 	
 	/** Return the entire wordToNum HashMap - use getWordNum(String) for individual word lookups */
