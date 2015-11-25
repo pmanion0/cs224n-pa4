@@ -12,7 +12,7 @@ public class Configuration {
   Boolean learnWordVec, allLowercase;
   Integer[] hiddenDimensions;
 
-  public Configuration(String[] args) {
+  public Configuration() {
     trainFilepath = "../data/train";
     testFilepath = "../data/dev";
     wordVecFilepath = "../data/wordVectors.txt";
@@ -32,11 +32,44 @@ public class Configuration {
     hiddenDimensions = new Integer[]{10};
   }
   
+  public Configuration(String opts) {
+    this();
+    this.parseConfigString(opts);
+  }
+  
   private void parseConfigString(String args) {
     String[] options = args.split(" ");
     Map<String,String> optMap = CommandLineUtils.simpleCommandLineParser(options);
     for (String key : optMap.keySet()) {
-      // TODO: Call the right getter/setters based on the string
+      String value = optMap.get(key);
+      if (key.equals("-train"))
+        setTrainFilepath(value);
+      else if (key.equals("-test"))
+        setTestFilepath(value);
+      else if (key.equals("-wordvec"))
+        setWordVecFilepath(value);
+      else if (key.equals("-vocab"))
+        setVocabFilepath(value);
+      else if (key.equals("-outfile"))
+        setOutputFile(value);
+      else if (key.equals("-lambda"))
+        setLambda(Double.valueOf(value));
+      else if (key.equals("-learnrate"))
+        setLearningRate(Double.valueOf(value));
+      else if (key.equals("-iters"))
+        setMaxIterations(Integer.valueOf(value));
+      else if (key.equals("-windowsize"))
+        setWindowSize(Integer.valueOf(value));
+      else if (key.equals("-wordvecdim"))
+        setWordVecDim(Integer.valueOf(value));
+      else if (key.equals("-learnwordvec"))
+        setLearnWordVec(Boolean.valueOf(value));
+      else if (key.equals("-lowcaseall"))
+        setAllLowercase(Boolean.valueOf(value));
+      else if (key.equals("-hiddendim"))
+        setHiddenDimensions(value);
+      else
+        System.err.println("ERROR: Arugment "+key+" "+value+" is not recognized");
     }
   }
   
@@ -78,5 +111,12 @@ public class Configuration {
 
   public Integer[] getHiddenDimensions() {  return hiddenDimensions;  }
   public void setHiddenDimensions(Integer[] hiddenDimensions) {  this.hiddenDimensions = hiddenDimensions;  }
+  public void setHiddenDimensions(String dimString) {
+    String[] splitString = dimString.split(",");
+    Integer[] dims = new Integer[splitString.length];
+    for (int i=0; i < splitString.length; i++)
+      dims[i] = Integer.valueOf(splitString[i]);
+    setHiddenDimensions(dims);
+  }
   
 }
