@@ -61,7 +61,7 @@ public class FeatureFactoryTest {
   @Test
   public void testInitializeVocab() {
     try {
-      FeatureFactory.initializeVocab("../testdata/vocab.txt");
+      FeatureFactory.initializeVocab("../testdata/vocab.txt", "UNK");
       HashMap<String, Integer> w2n = FeatureFactory.getWordToNum();
       HashMap<Integer, String> n2w = FeatureFactory.getNumToWord();
       assertTrue(w2n.size() == 7 && n2w.size() == 7);
@@ -87,8 +87,7 @@ public class FeatureFactoryTest {
   @Test
   public void testGetWordNum() {
     try {
-      FeatureFactory.initializeVocab("../testdata/vocab.txt");
-      FeatureFactory.setUnknownWord("UNK");
+      FeatureFactory.initializeVocab("../testdata/vocab.txt", "UNK");
       int id = FeatureFactory.getWordNum("()#$UWEOIFJWE)(#J!@");
       assertTrue(id == 5);
     } catch (IOException e) {
