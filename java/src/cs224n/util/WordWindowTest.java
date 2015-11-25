@@ -2,8 +2,8 @@ package cs224n.util;
 
 import static org.junit.Assert.*;
 
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import org.junit.BeforeClass;
@@ -24,22 +24,20 @@ public class WordWindowTest {
     Datum PETA   = new Datum("PETA",   "ORG");
     Datum in     = new Datum("in",     "O");
     Datum Dallas = new Datum("Dallas", "LOC");
+    Datum Texas  = new Datum("Texas", "LOC");
     example.add(John);
     example.add(joined);
     example.add(PETA);
     example.add(in);
     example.add(Dallas);
+    example.add(Texas); // Unknown Word
     
     // Initialize necessary book-keeping functions in FeatureFactory
-    HashMap<String,Integer> wtn = FeatureFactory.getWordToNum();
-    wtn.put("John",   0);
-    wtn.put("joined", 1);
-    wtn.put("PETA",   2);
-    wtn.put("in",     3);
-    wtn.put("Dallas", 4);
-    wtn.put("<s>",    5);
-    wtn.put("</s>",   6);
-    FeatureFactory.initializeTargets(new String[]{"O","LOC","MISC","ORG","PER"});
+    try {
+      FeatureFactory.initializeVocab("../testdata/wordwindow_vocab.txt", "UUUNKKK");
+    } catch (IOException e) {
+      fail("IO Exception in Setup");
+    }
   }
 
   @Test
@@ -90,19 +88,26 @@ public class WordWindowTest {
     
     // Roll 3
     test.rollWindow();
-    windowIntAnswer = new int[]{1,2,3,4,6};
-    windowStrAnswer = new String[]{"joined","PETA","in","Dallas","</s>"};
+    windowIntAnswer = new int[]{1,2,3,4,5};
+    windowStrAnswer = new String[]{"joined","PETA","in","Dallas","Texas"};
     assertArrayEquals(windowStrAnswer, test.getWordArray());
     assertArrayEquals(windowIntAnswer, test.getIDArray());
     
     // Roll 4
     test.rollWindow();
-    windowIntAnswer = new int[]{2,3,4,6,6};
-    windowStrAnswer = new String[]{"PETA","in","Dallas","</s>","</s>"};
+    windowIntAnswer = new int[]{2,3,4,5,5};
+    windowStrAnswer = new String[]{"PETA","in","Dallas","Texas","</s>"};
+    assertArrayEquals(windowStrAnswer, test.getWordArray());
+    assertArrayEquals(windowIntAnswer, test.getIDArray());
+    
+    // Roll 5
+    test.rollWindow();
+    windowIntAnswer = new int[]{3,4,5,5,5};
+    windowStrAnswer = new String[]{"in","Dallas","Texas","</s>","</s>"};
     assertArrayEquals(windowStrAnswer, test.getWordArray());
     assertArrayEquals(windowIntAnswer, test.getIDArray());
     
     // Roll should return false as window is complete
-    assert(!test.rollWindow());
+    assertFalse(test.rollWindow());
   }
 }
