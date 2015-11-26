@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 
 import cs224n.models.WindowModel;
+import cs224n.util.Configuration;
 import cs224n.util.FileIO;
 
 public class NER {
@@ -20,10 +21,8 @@ public class NER {
     List<Datum> testData = FileIO.read(args[1]);
 
     // RUN THE WINDOWMODEL
-    WindowModel model = new WindowModel(50, 5, new int[]{20});
-
-    FeatureFactory.readWordVectors("../data/wordVectors.txt");
-    FeatureFactory.initializeVocab("../data/vocab.txt", "UUUNKKK");
+    Configuration conf = new Configuration();
+    WindowModel model = new WindowModel(conf);
       
     model.train(trainData);
     model.test(testData, "../ner.out");
