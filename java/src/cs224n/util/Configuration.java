@@ -4,7 +4,8 @@ import java.util.Map;
 
 public class Configuration {
   
-  String trainFilepath, testFilepath, wordVecFilepath, vocabFilepath, outputFile;
+  String trainFilepath, testFilepath, wordVecFilepath, vocabFilepath,
+    outputFile, unknownWord, targetEntities;
   Double lambda, learningRate;
   Integer maxIterations, windowSize, wordVecDim;
   Boolean learnWordVec, allLowercase;
@@ -16,6 +17,8 @@ public class Configuration {
     wordVecFilepath = "../data/wordVectors.txt";
     vocabFilepath = "../data/vocab.txt";
     outputFile = "../scored.out";
+    unknownWord = "UUUNKKK";
+    targetEntities = "O,LOC,MISC,ORG,PER";
     
     lambda = 0.000000;
     learningRate = 0.0000000;
@@ -31,7 +34,7 @@ public class Configuration {
   }
   
   public Configuration(String opts) {
-    this();
+    this(); // Initialize defaults with Configuration()
     this.parseConfigString(opts);
   }
   
@@ -66,6 +69,10 @@ public class Configuration {
         setAllLowercase(Boolean.valueOf(value));
       else if (key.equals("-hiddendim"))
         setHiddenDimensions(value);
+      else if (key.equals("-unkword"))
+        setUnknownWord(value);
+      else if (key.equals("-targetEntities"))
+        setTargetEntities(value);
       else
         System.err.println("ERROR: Arugment "+key+" "+value+" is not recognized");
     }
@@ -106,6 +113,12 @@ public class Configuration {
 
   public Boolean getAllLowercase() {  return allLowercase;  }
   public void setAllLowercase(Boolean allLowercase) {  this.allLowercase = allLowercase;  }
+
+  public String getUnknownWord() {  return unknownWord;  }
+  public void setUnknownWord(String unknownWord) {  this.unknownWord = unknownWord;  }
+  
+  public String[] getTargetEntities() {  return targetEntities.split(",");  }
+  public void setTargetEntities(String entities) {  this.targetEntities = entities;  }
 
   public Integer[] getHiddenDimensions() {  return hiddenDimensions;  }
   public void setHiddenDimensions(Integer[] hiddenDimensions) {  this.hiddenDimensions = hiddenDimensions;  }
