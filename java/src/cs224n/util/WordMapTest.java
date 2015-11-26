@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import java.io.IOException;
 import java.util.HashMap;
 
+import org.ejml.simple.SimpleMatrix;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -16,6 +17,7 @@ public class WordMapTest {
   public static void oneTimeSetUp() throws IOException {
     Configuration conf = new Configuration();
     conf.setVocabFilepath("../testdata/vocab.txt");
+    conf.setWordVecFilepath("../testdata/wordvec.txt");
     conf.setUnknownWord("UNK");
     map = new WordMap(conf);
   }
@@ -72,7 +74,32 @@ public class WordMapTest {
 
   @Test
   public void testGetWordVector() {
-    fail("Not yet implemented");
+    double tolerance = 1e-5;
+    SimpleMatrix wordvec, answer;
+    
+    wordvec = map.getWordVector(0);
+    answer = simpleAnswer(8, 2, 5, 3);
+    assertTrue(wordvec.isIdentical(answer, tolerance));
+    
+    wordvec = map.getWordVector(1);
+    answer = simpleAnswer(9, -1, 3, 2);
+    assertTrue(wordvec.isIdentical(answer, tolerance));
+    
+    wordvec = map.getWordVector(2);
+    answer = simpleAnswer(0, 0, 0, 0);
+    assertTrue(wordvec.isIdentical(answer, tolerance));
+    
+    wordvec = map.getWordVector(3);
+    answer = simpleAnswer(-1, -3, -7, -9);
+    assertTrue(wordvec.isIdentical(answer, tolerance));
+    
+    wordvec = map.getWordVector(4);
+    answer = simpleAnswer(3, -0.2, 999, -0);
+    assertTrue(wordvec.isIdentical(answer, tolerance));
+  }
+  
+  public SimpleMatrix simpleAnswer(double... args) {
+    return new SimpleMatrix(new double[][]{args});
   }
 
 }
