@@ -3,6 +3,7 @@ package main;
 import java.io.IOException;
 import java.util.List;
 
+import cs224n.util.Configuration;
 import cs224n.util.TestConfigReader;
 
 
@@ -14,13 +15,13 @@ public class TestConfigLauncher {
       return;
     }
     
-    List<String> runConfigStrings = TestConfigReader.parseFile(args[0]);
-    System.out.println("Read " + runConfigStrings.size() + " test configurations.");
+    List<Configuration> runConfigs = TestConfigReader.parseFile(args[0]);
+    System.out.println("Read " + runConfigs.size() + " test configurations.");
     
-    for (int i=0; i < runConfigStrings.size(); i++) {
+    for (int i=0; i < runConfigs.size(); i++) {
       System.out.println("--- Configuration #"+i+" ---");
-      String confString = runConfigStrings.get(i);
-      Launcher.run(confString);
+      Configuration conf = runConfigs.get(i);
+      Launcher.run(conf);
       System.out.println("-------------------------");
     }
   }
