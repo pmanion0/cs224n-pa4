@@ -15,9 +15,9 @@ public class TestConfigReader {
    * @param filepath - Full filepath to a test config file
    * @return - list of all the Configuration to run
    */
-  public static List<String> parseFile(String filepath) throws IOException {
+  public static List<Configuration> parseFile(String filepath) throws IOException {
     Map<String,String> options = new HashMap<String,String>();
-    List<String> output = new ArrayList<String>();
+    List<Configuration> output = new ArrayList<Configuration>();
     BufferedReader reader = new BufferedReader(new FileReader(filepath));
     String line = reader.readLine();
     
@@ -30,8 +30,8 @@ public class TestConfigReader {
     // Read through the file and create all requested configurations
     while ((line = reader.readLine()) != null) {
       if (isSeparator(line)) {
-        String configString = optionMapToString(options);
-        output.add(configString);
+        Configuration config = new Configuration(options);
+        output.add(config);
       } else {
         String option = line.trim().split(":")[0];
         String value = line.trim().split(":")[1];
