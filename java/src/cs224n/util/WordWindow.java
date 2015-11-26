@@ -4,7 +4,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import cs224n.deep.Datum;
-import cs224n.deep.FeatureFactory;
 
 public class WordWindow {
 
@@ -13,30 +12,33 @@ public class WordWindow {
   private List<Integer> windowIDs;
   private List<Datum> data;
   private String startTag = "<s>", endTag = "</s>";
+  private WordMap wordMap;
   
   /**
    * Create a new word window to handle rolling windows
    * @param data - List of Datum that we want to roll through
    * @param windowSize - Full size of the rolling window
    */
-  public WordWindow(List<Datum> data, int windowSize) {
-    this.tailSize = (windowSize-1)/2;
+  public WordWindow(List<Datum> data, int windowSize, WordMap map) {
     this.windowSize = windowSize;
-    this.windowStr = new LinkedList<String>();
-    this.windowIDs = new LinkedList<Integer>();
+    this.tailSize = (windowSize-1)/2;
     this.data = data;
     this.currentWordIndex = 0;
+    this.wordMap = map;
+    
+    this.windowStr = new LinkedList<String>();
+    this.windowIDs = new LinkedList<Integer>();
     
     // Pad with start tags
     for (int i=0; i < tailSize; i++) {
       windowStr.add(startTag);
-      windowIDs.add(FeatureFactory.getWordNum(startTag));
+      windowIDs.add(wordMap.getWordNum(startTag));
     }
     // Fill the remaining spots with words
     for (int j=0; j < windowSize-tailSize; j++) {
       String newWord = data.get(j).word;
       windowStr.add(newWord);
-      windowIDs.add(FeatureFactory.getWordNum(newWord));
+      windowIDs.add(wordMap.getWordNum(newWord));
       nextWordIndex++;
     }
   }
@@ -61,11 +63,11 @@ public class WordWindow {
         // If the next word is in the data, add it to the queue
         String newWord = data.get(nextWordIndex).word;
         windowStr.add(newWord);
-        windowIDs.add(FeatureFactory.getWordNum(newWord));
+        windowIDs.add(wordMap.getWordNum(newWord));
       } else {
         // Otherwise, pad the back with an END tag
         windowStr.add(endTag);
-        windowIDs.add(FeatureFactory.getWordNum(endTag));
+        windowIDs.add(wordMap.getWordNum(endTag));
       }
       result = true;
     } else {
@@ -112,7 +114,7 @@ public class WordWindow {
   }
   /** Return the current target word **/
   public int getTargetLabelID() {
-    return FeatureFactory.getTargetNum(this.getTargetLabel());
+    return wordMap.getTargetNum(this.getTargetLabel());
   }
   
 }

@@ -10,14 +10,14 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import cs224n.deep.Datum;
-import cs224n.deep.FeatureFactory;
 
 public class WordWindowTest {
   
+  static WordMap map;
   static List<Datum> example = new ArrayList<Datum>();
 
   @BeforeClass
-  public static void oneTimeSetUp() {
+  public static void oneTimeSetUp() throws IOException {
     // Create the example for testing
     Datum John   = new Datum("John",   "PER");
     Datum joined = new Datum("joined", "O");
@@ -32,18 +32,16 @@ public class WordWindowTest {
     example.add(Dallas);
     example.add(Texas); // Unknown Word
     
-    // Initialize necessary book-keeping functions in FeatureFactory
-    try {
-      FeatureFactory.initializeVocab("../testdata/wordwindow_vocab.txt", "UUUNKKK");
-    } catch (IOException e) {
-      fail("IO Exception in Setup");
-    }
+    Configuration conf = new Configuration();
+    conf.setVocabFilepath("../testdata/wordwindow_vocab.txt");
+    conf.setUnknownWord("UUUNKKK");
+    map = new WordMap(conf);
   }
 
   @Test
   public void testWordWindow3() {
     // Check the initial word windows are correct (SIZE == 3)
-    WordWindow test = new WordWindow(example, 3);
+    WordWindow test = new WordWindow(example, 3, map);
     
     String[] windowStrAnswer = new String[]{"<s>","John","joined"};
     assertArrayEquals(windowStrAnswer, test.getWordArray());
@@ -55,7 +53,7 @@ public class WordWindowTest {
   @Test
   public void testWordWindow5() {
     // Check the initial word windows are correct (SIZE == 5)
-    WordWindow test = new WordWindow(example, 5);
+    WordWindow test = new WordWindow(example, 5, map);
     
     String[] windowStrAnswer = new String[]{"<s>","<s>","John","joined","PETA"};
     assertArrayEquals(windowStrAnswer, test.getWordArray());
@@ -70,7 +68,7 @@ public class WordWindowTest {
     // Check the rolling windows work for String and Integer
     String[] windowStrAnswer;
     int[] windowIntAnswer;
-    WordWindow test = new WordWindow(example, 5);
+    WordWindow test = new WordWindow(example, 5, map);
     
     // Roll 1
     test.rollWindow();
