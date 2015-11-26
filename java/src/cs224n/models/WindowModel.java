@@ -1,40 +1,42 @@
 package cs224n.models;
 
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 import org.ejml.simple.SimpleMatrix;
 
 import cs224n.deep.Datum;
 import cs224n.deep.FakeNeuralNetwork;
-import cs224n.deep.FeatureFactory;
+import cs224n.util.Configuration;
+import cs224n.util.FileIO;
+import cs224n.util.WordMap;
 import cs224n.util.WordWindow;
 
 public class WindowModel implements Model {
+  
+  private WordMap wordMap;
 
-  public int wordVecSize, windowSize;
-  public int[] hiddenSizes;
+  Configuration conf;
   //public NeuralNetwork model;
   public FakeNeuralNetwork model;
   
-  public WindowModel(int wordVecSize, int windowSize, int[] hiddenSizes) {
-    if (windowSize % 2 == 0) {
+  public WindowModel(Configuration configuration) throws IOException {
+    if (configuration.getWindowSize() % 2 == 0) {
       System.err.println("ERROR: I'm sorry Dave. I'm afraid I can't let you use even windowSizes.");
-      windowSize = 3;
+      configuration.setWindowSize(3);
     }
-    this.wordVecSize = wordVecSize;
-    this.windowSize = windowSize;
-    this.hiddenSizes = hiddenSizes;
-    //model = new NeuralNetwork(wordVecSize*windowSize, hiddenSizes, 5);
-    model = new FakeNeuralNetwork();
+    conf = configuration;
+    //model = new NeuralNetwork(conf);
+    model = new FakeNeuralNetwork(conf);
+    wordMap = new WordMap(conf);
   }
 
   /**
    * Simplest SGD training
    */
   public void train(List<Datum> trainData) {
-    WordWindow window = new WordWindow(trainData, windowSize);
+    WordWindow window = new WordWindow(trainData, conf.getWindowSize(), wordMap);
     
     do {
       int targetID = window.getTargetLabelID();
@@ -48,17 +50,17 @@ public class WindowModel implements Model {
   
   public void test(List<Datum> testData, String outfile) {
     List<String> predictions = new ArrayList<String>();
-    WordWindow window = new WordWindow(testData, windowSize);
+    WordWindow window = new WordWindow(testData, conf.getWindowSize(), wordMap);
     
     do {
       int[] windowIDs = window.getIDArray();
       SimpleMatrix X = idsToWordVector(windowIDs);
       int pred = model.getBestOutputClass(X);
-      String predStr = FeatureFactory.getTargetName(pred);
+      String predStr = wordMap.getTargetName(pred);
       predictions.add(predStr);
     } while (window.rollWindow());
     
-    FeatureFactory.outputScoringToFile(testData, predictions, outfile);
+    FileIO.outputScoringToFile(testData, predictions, outfile);
   }
   
   
@@ -69,11 +71,11 @@ public class WindowModel implements Model {
    * @return Combined word vector, e.g. [wordVec1 wordVec2 ... wordVecN]
    */
   public SimpleMatrix idsToWordVector(int[] idList) {
-    SimpleMatrix windowVector = new SimpleMatrix(1, windowSize*wordVecSize);
+    SimpleMatrix windowVector = new SimpleMatrix(1, conf.getWindowSize()*conf.getWordVecDim());
     for (int i=0; i < idList.length; i++) {
       int wordID = idList[i];
-      SimpleMatrix wordVec = FeatureFactory.wordVector.extractVector(true, wordID); 
-      windowVector.insertIntoThis(0, i*wordVecSize, wordVec);
+      SimpleMatrix wordVec = wordMap.getWordVector(wordID);
+      windowVector.insertIntoThis(0, i*conf.getWordVecDim(), wordVec);
     }
     return new SimpleMatrix(windowVector);
   }
