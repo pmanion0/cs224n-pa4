@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 
 import cs224n.models.WindowModel;
+import cs224n.util.FileIO;
 
 public class NER {
   
@@ -15,8 +16,8 @@ public class NER {
     }     
   
     // Read in the requested data files and initialize necessary data structures
-    List<Datum> trainData = FeatureFactory.readTrainData(args[0]);
-    List<Datum> testData = FeatureFactory.readTestData(args[1]);
+    List<Datum> trainData = FileIO.read(args[0]);
+    List<Datum> testData = FileIO.read(args[1]);
 
     // RUN THE WINDOWMODEL
     WindowModel model = new WindowModel(50, 5, new int[]{20});

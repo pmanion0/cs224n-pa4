@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Random;
 
 import cs224n.deep.Datum;
-import cs224n.deep.FeatureFactory;
+import cs224n.util.FileIO;
 
 public class BaselineModel implements Model {
   
@@ -40,7 +40,7 @@ public class BaselineModel implements Model {
       String predLabel = predictDatum(test);
       predictions.add(predLabel);
     }
-    FeatureFactory.outputScoringToFile(testData, predictions, outfile);
+    FileIO.outputScoringToFile(testData, predictions, outfile);
   }
   
   
