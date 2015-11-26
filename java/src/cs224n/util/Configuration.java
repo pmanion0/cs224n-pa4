@@ -1,15 +1,16 @@
 package cs224n.util;
 
+import java.util.Arrays;
 import java.util.Map;
 
 public class Configuration {
   
-  String trainFilepath, testFilepath, wordVecFilepath, vocabFilepath,
+  private String trainFilepath, testFilepath, wordVecFilepath, vocabFilepath,
     outputFile, unknownWord, targetEntities;
-  Double lambda, learningRate;
-  Integer maxIterations, windowSize, wordVecDim;
-  Boolean learnWordVec, allLowercase;
-  Integer[] hiddenDimensions;
+  private Double lambda, learningRate;
+  private Integer maxIterations, windowSize, wordVecDim;
+  private Boolean learnWordVec, allLowercase;
+  private Integer[] hiddenDimensions;
 
   public Configuration() {
     trainFilepath = "../data/train";
@@ -35,14 +36,18 @@ public class Configuration {
   
   public Configuration(String opts) {
     this(); // Initialize defaults with Configuration()
-    this.parseConfigString(opts);
+    Map<String,String> optMap = CommandLineUtils.simpleCommandLineParser(opts.split(" "));
+    this.parseConfigMap(optMap);
   }
   
-  private void parseConfigString(String args) {
-    String[] options = args.split(" ");
-    Map<String,String> optMap = CommandLineUtils.simpleCommandLineParser(options);
-    for (String key : optMap.keySet()) {
-      String value = optMap.get(key);
+  public Configuration(Map<String,String> optMap) {
+    this(); // Initialize defaults with Configuration()
+    this.parseConfigMap(optMap);
+  }
+  
+  private void parseConfigMap(Map<String,String> map) {
+    for (String key : map.keySet()) {
+      String value = map.get(key);
       if (key.equals("-train"))
         setTrainFilepath(value);
       else if (key.equals("-test"))
