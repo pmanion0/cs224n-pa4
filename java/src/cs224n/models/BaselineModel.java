@@ -1,4 +1,4 @@
-package cs224n.deep;
+package cs224n.models;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -8,7 +8,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
-public class BaselineModel implements NERModel {
+import cs224n.deep.Datum;
+import cs224n.deep.FeatureFactory;
+
+public class BaselineModel implements Model {
   
   public static HashMap<String, String> trainNER = new HashMap<String, String>();
   private static Random random = new Random();

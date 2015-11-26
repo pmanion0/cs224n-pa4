@@ -1,4 +1,4 @@
-package cs224n.deep;
+package cs224n.models;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -6,9 +6,12 @@ import java.util.List;
 
 import org.ejml.simple.SimpleMatrix;
 
+import cs224n.deep.Datum;
+import cs224n.deep.FakeNeuralNetwork;
+import cs224n.deep.FeatureFactory;
 import cs224n.util.WordWindow;
 
-public class WindowModel implements NERModel {
+public class WindowModel implements Model {
 
   public int wordVecSize, windowSize;
   public int[] hiddenSizes;

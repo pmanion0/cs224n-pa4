@@ -3,6 +3,8 @@ package cs224n.deep;
 import java.io.IOException;
 import java.util.List;
 
+import cs224n.models.WindowModel;
+
 public class NER {
   
   public static void main(String[] args) throws IOException {

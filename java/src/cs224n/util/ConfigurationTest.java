@@ -1,4 +1,4 @@
-package cs224n.deep;
+package cs224n.util;
 
 import static org.junit.Assert.*;
 

@@ -1,4 +1,4 @@
-package cs224n.deep;
+package cs224n.junk;
 
 import java.util.List;
 import org.ejml.simple.SimpleMatrix;

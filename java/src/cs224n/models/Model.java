@@ -1,6 +1,8 @@
-package cs224n.deep;
+package cs224n.models;
 
 import java.util.List;
+
+import cs224n.deep.Datum;
 
 /**
  * NER Model Interface:
@@ -8,7 +10,7 @@ import java.util.List;
  * @author afg479
  *
  */
-public interface NERModel {
+public interface Model {
   public void train(List<Datum> trainData);
   public void test(List<Datum> testData, String outfile);
 }

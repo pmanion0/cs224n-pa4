@@ -1,8 +1,6 @@
-package cs224n.deep;
+package cs224n.util;
 
 import java.util.Map;
-
-import cs224n.util.CommandLineUtils;
 
 public class Configuration {
   
