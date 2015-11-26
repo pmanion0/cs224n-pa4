@@ -46,7 +46,7 @@ public class TestConfigReader {
    * Return TRUE if the string is a test config separator (line starting with ----)
    */
   public static boolean isSeparator(String line) {
-    return line.substring(0,4).equals("----");
+    return line.length() >= 4 ? line.substring(0,4).equals("----") : false;
   }
   
   /**
@@ -57,8 +57,8 @@ public class TestConfigReader {
   public static String optionMapToString(Map<String,String> options) {
     String output = "";
     for (String key : options.keySet()) {
-      output += "-" + key + " " + options.get(key);
+      output += "-" + key + " " + options.get(key) + " ";
     }
-    return output;
+    return output.trim(); // Remove the trailing space
   }
 }
