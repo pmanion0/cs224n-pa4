@@ -134,5 +134,114 @@ public class Configuration {
       dims[i] = Integer.valueOf(splitString[i]);
     setHiddenDimensions(dims);
   }
+
+  
+  
+  /**** Automatically Generated hashCode + equals Operators ****/
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((allLowercase == null) ? 0 : allLowercase.hashCode());
+    result = prime * result + Arrays.hashCode(hiddenDimensions);
+    result = prime * result + ((lambda == null) ? 0 : lambda.hashCode());
+    result = prime * result + ((learnWordVec == null) ? 0 : learnWordVec.hashCode());
+    result = prime * result + ((learningRate == null) ? 0 : learningRate.hashCode());
+    result = prime * result + ((maxIterations == null) ? 0 : maxIterations.hashCode());
+    result = prime * result + ((outputFile == null) ? 0 : outputFile.hashCode());
+    result = prime * result + ((targetEntities == null) ? 0 : targetEntities.hashCode());
+    result = prime * result + ((testFilepath == null) ? 0 : testFilepath.hashCode());
+    result = prime * result + ((trainFilepath == null) ? 0 : trainFilepath.hashCode());
+    result = prime * result + ((unknownWord == null) ? 0 : unknownWord.hashCode());
+    result = prime * result + ((vocabFilepath == null) ? 0 : vocabFilepath.hashCode());
+    result = prime * result + ((windowSize == null) ? 0 : windowSize.hashCode());
+    result = prime * result + ((wordVecDim == null) ? 0 : wordVecDim.hashCode());
+    result = prime * result + ((wordVecFilepath == null) ? 0 : wordVecFilepath.hashCode());
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    Configuration other = (Configuration) obj;
+    if (allLowercase == null) {
+      if (other.allLowercase != null)
+        return false;
+    } else if (!allLowercase.equals(other.allLowercase))
+      return false;
+    if (!Arrays.equals(hiddenDimensions, other.hiddenDimensions))
+      return false;
+    if (lambda == null) {
+      if (other.lambda != null)
+        return false;
+    } else if (!lambda.equals(other.lambda))
+      return false;
+    if (learnWordVec == null) {
+      if (other.learnWordVec != null)
+        return false;
+    } else if (!learnWordVec.equals(other.learnWordVec))
+      return false;
+    if (learningRate == null) {
+      if (other.learningRate != null)
+        return false;
+    } else if (!learningRate.equals(other.learningRate))
+      return false;
+    if (maxIterations == null) {
+      if (other.maxIterations != null)
+        return false;
+    } else if (!maxIterations.equals(other.maxIterations))
+      return false;
+    if (outputFile == null) {
+      if (other.outputFile != null)
+        return false;
+    } else if (!outputFile.equals(other.outputFile))
+      return false;
+    if (targetEntities == null) {
+      if (other.targetEntities != null)
+        return false;
+    } else if (!targetEntities.equals(other.targetEntities))
+      return false;
+    if (testFilepath == null) {
+      if (other.testFilepath != null)
+        return false;
+    } else if (!testFilepath.equals(other.testFilepath))
+      return false;
+    if (trainFilepath == null) {
+      if (other.trainFilepath != null)
+        return false;
+    } else if (!trainFilepath.equals(other.trainFilepath))
+      return false;
+    if (unknownWord == null) {
+      if (other.unknownWord != null)
+        return false;
+    } else if (!unknownWord.equals(other.unknownWord))
+      return false;
+    if (vocabFilepath == null) {
+      if (other.vocabFilepath != null)
+        return false;
+    } else if (!vocabFilepath.equals(other.vocabFilepath))
+      return false;
+    if (windowSize == null) {
+      if (other.windowSize != null)
+        return false;
+    } else if (!windowSize.equals(other.windowSize))
+      return false;
+    if (wordVecDim == null) {
+      if (other.wordVecDim != null)
+        return false;
+    } else if (!wordVecDim.equals(other.wordVecDim))
+      return false;
+    if (wordVecFilepath == null) {
+      if (other.wordVecFilepath != null)
+        return false;
+    } else if (!wordVecFilepath.equals(other.wordVecFilepath))
+      return false;
+    return true;
+  }
   
 }
