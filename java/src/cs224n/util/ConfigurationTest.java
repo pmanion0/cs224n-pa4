@@ -40,11 +40,11 @@ public class ConfigurationTest {
     assertTrue(conf.getAllLowercase());
     assertFalse(conf.getLearnWordVec());
     
-    assertArrayEquals(conf.getHiddenDimensions(), new Integer[]{100});
+    assertArrayEquals(conf.getHiddenDimensions(), new int[]{100});
     
     // Test a few alternate configurations to ensure its working properly
     conf.setHiddenDimensions("10,5,3,9");
-    assertArrayEquals(conf.getHiddenDimensions(), new Integer[]{10,5,3,9});
+    assertArrayEquals(conf.getHiddenDimensions(), new int[]{10,5,3,9});
     
     conf.setLearnWordVec(true);
     assertTrue(conf.getLearnWordVec());
