@@ -12,6 +12,7 @@ public class WordMap {
   private HashMap<Integer, String> numToWord, numToTarget;
   private SimpleMatrix wordVector;
   private String unknownWord;
+  private boolean allLowercase;
   
   /**
    * Create useful map functions based on a provided vocabulary file
@@ -20,17 +21,19 @@ public class WordMap {
    */
   public WordMap(Configuration conf) throws IOException {
     wordVector = FileIO.readWordVectors(conf.getWordVecFilepath());
-    unknownWord = conf.getUnknownWord().toLowerCase();
+    allLowercase = conf.getAllLowercase();
     
-    initializeTargetMap(conf.getTargetEntities());
-    initializeWordMap(conf.getVocabFilepath());
+    this.setUnknownWord(conf.getUnknownWord());
+    this.initializeTargetMap(conf.getTargetEntities());
+    this.initializeWordMap(conf.getVocabFilepath());
   }
   
   /**
    * Return the ID for a number (using the unknown word if needed)
    */
   public int getWordNum(String word) {
-    word = word.toLowerCase();
+    word = formatWord(word);
+    
     if (wordToNum.containsKey(word))
       return wordToNum.get(word);
     else if (wordToNum.containsKey(unknownWord))
@@ -86,7 +89,7 @@ public class WordMap {
     
     BufferedReader in = new BufferedReader(new FileReader(filepath));
     for (String word = in.readLine(); word != null; word = in.readLine()) {
-      word = word.toLowerCase();
+      word = formatWord(word);
       // Skip any empty lines or words that have already appeared
       if (word.trim().length() == 0 || wordToNum.containsKey(word)) {
         continue;
@@ -109,7 +112,14 @@ public class WordMap {
    * Set the Unknown Word
    */
   public void setUnknownWord(String s) {
-    unknownWord = s.toLowerCase();
+    unknownWord = formatWord(s);
+  }
+  
+  /**
+   * Apply any necssary transformations to the input word (e.g. lowcase)
+   */
+  public String formatWord(String word) {
+    return (allLowercase ? word.toLowerCase() : word);
   }
   
   /** Return the entire wordToNum HashMap - use getWordNum(String) for individual word lookups */

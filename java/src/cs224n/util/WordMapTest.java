@@ -12,13 +12,15 @@ import org.junit.Test;
 public class WordMapTest {
   
   public static WordMap map;
+  public static Configuration conf;
 
   @BeforeClass
   public static void oneTimeSetUp() throws IOException {
-    Configuration conf = new Configuration();
+    conf = new Configuration();
     conf.setVocabFilepath("../testdata/vocab.txt");
     conf.setWordVecFilepath("../testdata/wordvec.txt");
     conf.setUnknownWord("UNK");
+    conf.setAllLowercase(true);
     map = new WordMap(conf);
   }
   
@@ -100,6 +102,25 @@ public class WordMapTest {
   
   public SimpleMatrix simpleAnswer(double... args) {
     return new SimpleMatrix(new double[][]{args});
+  }
+  
+  @Test
+  public void testCaseSensitivity() throws IOException {
+    // Test the allLowerCase configuration (from oneTimeSetUp)
+    assertEquals(map.getWordNum("Vocab"), map.getWordNum("vocab"));
+    
+    // Test configuration WITH case
+    conf.setAllLowercase(false);
+    WordMap map2 = new WordMap(conf);
+    
+    HashMap<String, Integer> w2n = map2.getWordToNum();
+    
+    assertFalse(w2n.containsKey("unk"));
+    assertTrue(w2n.containsKey("UNK"));
+    
+    // File contains "Vocab" but not "vocab" so it should map to unknown
+    assertEquals(map2.getWordNum("Vocab"), 2);
+    assertEquals(map2.getWordNum("vocab"), map2.getWordNum("UNK"));
   }
 
 }
