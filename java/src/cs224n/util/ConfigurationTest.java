@@ -13,6 +13,8 @@ public class ConfigurationTest {
         + "-wordvec /word/path "
         + "-vocab /voc/ab "
         + "-outfile /tmp/file.txt "
+        + "-unkword zebra "
+        + "-entities O,LOC,MISC,ORG,PER "
         + "-lambda 0.00304 "
         + "-learnrate 0.00342 "
         + "-iters 33 "
@@ -29,6 +31,9 @@ public class ConfigurationTest {
     assertEquals(conf.getWordVecFilepath(), "/word/path");
     assertEquals(conf.getVocabFilepath(), "/voc/ab");
     assertEquals(conf.getOutputFile(), "/tmp/file.txt");
+    assertEquals(conf.getUnknownWord(), "zebra");
+    assertArrayEquals(conf.getTargetEntities(), new String[]{"O","LOC","MISC","ORG","PER"});
+    assertTrue(conf.getOutputDim() == 5);
     
     assertTrue(conf.getLambda() == 0.00304);
     assertTrue(conf.getLearningRate() == 0.00342);
@@ -51,6 +56,10 @@ public class ConfigurationTest {
     
     conf.setAllLowercase(false);
     assertFalse(conf.getAllLowercase());
+    
+    conf.setTargetEntities("O,LOC,ORG");
+    assertArrayEquals(conf.getTargetEntities(), new String[]{"O","LOC","ORG"});
+    assertTrue(conf.getOutputDim() == 3);
   }
 
 }

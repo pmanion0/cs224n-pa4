@@ -8,7 +8,7 @@ public class Configuration {
   private String trainFilepath, testFilepath, wordVecFilepath, vocabFilepath,
     outputFile, unknownWord, targetEntities;
   private Double lambda, learningRate;
-  private Integer maxIterations, windowSize, wordVecDim, outputDim;
+  private Integer maxIterations, windowSize, wordVecDim;
   private Boolean learnWordVec, allLowercase;
   private int[] hiddenDimensions;
 
@@ -27,7 +27,6 @@ public class Configuration {
     maxIterations = 1;
     windowSize = 3;
     wordVecDim = 50;
-    outputDim = 5;
     
     learnWordVec = false;
     allLowercase = true;
@@ -77,7 +76,7 @@ public class Configuration {
         setHiddenDimensions(value);
       else if (key.equals("-unkword"))
         setUnknownWord(value);
-      else if (key.equals("-targetEntities"))
+      else if (key.equals("-entities"))
         setTargetEntities(value);
       else
         System.err.println("ERROR: Arugment "+key+" "+value+" is not recognized");
@@ -114,14 +113,6 @@ public class Configuration {
   public Integer getWordVecDim() {  return wordVecDim;  }
   public void setWordVecDim(Integer wordVecDim) {  this.wordVecDim = wordVecDim;  }
 
-  public Integer getOutputDim() {
-		return outputDim;
-	}
-
-	public void setOutputDim(Integer outputDim) {
-		this.outputDim = outputDim;
-	}
-
   public Boolean getLearnWordVec() {  return learnWordVec;  }
   public void setLearnWordVec(Boolean learnWordVec) {  this.learnWordVec = learnWordVec;  }
 
@@ -144,7 +135,10 @@ public class Configuration {
     setHiddenDimensions(dims);
   }
 
-  
+  /** Return the output dimension implied by targetEntities */
+  public Integer getOutputDim() {
+    return targetEntities.split(",").length;
+  }
   
   /**** Automatically Generated hashCode + equals Operators ****/
   @Override
