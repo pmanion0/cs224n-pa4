@@ -1,9 +1,13 @@
 package cs224n.deep;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import org.ejml.simple.SimpleMatrix;
+import cs224n.util.Configuration;
+import cs224n.util.FileIO;
 import cs224n.util.Nabla;
 import cs224n.util.WeightedInputAndActivation;
 
@@ -20,28 +24,22 @@ public class NeuralNetwork {
   private List<SimpleMatrix> b1;
   // bias for final layer
   private SimpleMatrix b2;
-  private double lambda = 0, alpha = 1e-4;
+  private double lambda, alpha;
   
-  public NeuralNetwork(int inputDim, int[] hiddenDims, int outputDim) {
-    this.inputDim = inputDim;
-    this.outputDim = outputDim;
-    this.hiddenDims = hiddenDims;
+
+  
+  public NeuralNetwork(Configuration conf) {
+    this.inputDim = conf.getWindowSize() * conf.getWordVecDim();
+    this.outputDim = conf.getOutputDim();
+    this.hiddenDims = conf.getHiddenDimensions();
+    this.lambda = conf.getLambda();
+    this.alpha = conf.getLearningRate();
+    this.W = new ArrayList<SimpleMatrix>();
+    this.b1 = new ArrayList<SimpleMatrix>();
+    
+    //System.out.println(W.get(0));
     initializeMatrices();
   }
-  
-  /**
-   * Set the regularization constant lambda
-   */
-  public void setLambda(double lambda) {
-    this.lambda = lambda;
-  }
-  /**
-   * Set the learning rate alpha
-   */
-  public void setAlpha(double alpha) {
-    this.lambda = alpha;
-  }
-
   
   /**
    * Randomly initialize all parameters for the network
@@ -53,14 +51,20 @@ public class NeuralNetwork {
   	int layer = 0;
   	double epsilon;
 
+		double[][] allOnes = new double [inputDim][1];
+		for (double[] row : allOnes)
+			Arrays.fill(row, 1.0);
+		W.add(0, new SimpleMatrix(allOnes)); 
+		b1.add(0, new SimpleMatrix(inputDim,1));
+		
   	// initialize non-final layer
     for (int hiddenDim : hiddenDims) {
       // [Input:Hidden#1] [Hidden#1:Hidden#2] ... [Hidden#n:Output]
     	int fanOut = hiddenDim;
-    	epsilon = Math.sqrt(6) / Math.sqrt(fanIn + fanOut);
-    	W.add(layer, SimpleMatrix.random(fanOut, fanIn, -epsilon, epsilon, rand)); 
+    	epsilon = Math.sqrt(6) / Math.sqrt(fanIn + fanOut);   	
+    	W.add(layer+1, SimpleMatrix.random(fanOut, fanIn, -epsilon, epsilon, rand)); 
     	// initialize to 0;
-    	b1.add(layer, new SimpleMatrix(fanOut, 1));
+    	b1.add(layer+1, new SimpleMatrix(fanOut, 1));
     	layer++;
       // update fanIn
     	fanIn = hiddenDim;
@@ -83,7 +87,7 @@ public class NeuralNetwork {
   	SimpleMatrix tanhOfZ = new SimpleMatrix(numOfRows, numOfCols);
   	for (int i = 0; i < numOfRows; i++) {
   		for (int j = 0; j < numOfCols; j++) {
-  			tanhOfZ.set(numOfRows, numOfCols, Math.tanh(z.get(i, j)));
+  			tanhOfZ.set(i, j, Math.tanh(z.get(i, j)));
   		} // end j
   	} // end i
   	return tanhOfZ;
@@ -100,7 +104,7 @@ public class NeuralNetwork {
   	SimpleMatrix tanhPrimeOfZ = new SimpleMatrix(numOfRows, numOfCols);
   	for (int i = 0; i < numOfRows; i++) {
   		for (int j = 0; j < numOfCols; j++) {
-  			tanhPrimeOfZ.set(numOfRows, numOfCols, 1- Math.tanh(z.get(i, j)) * Math.tanh(z.get(i, j)) );
+  			tanhPrimeOfZ.set(i, j, 1- Math.tanh(z.get(i, j)) * Math.tanh(z.get(i, j)) );
   		} // end j
   	} // end i
   	return tanhPrimeOfZ;
@@ -168,13 +172,14 @@ public class NeuralNetwork {
   	SimpleMatrix [] weightedInput = new SimpleMatrix[hiddenLayerSize + 2];
   	
   	// forward feed
-  	for (int i = 0; i < hiddenLayerSize + 1; i++) {
+  	for (int i = 0; i < hiddenLayerSize + 2; i++) {
   		// input layer
   		if (i == 0) {
   			double[][] allOnes = new double [inputDim][1];
-  			Arrays.fill(allOnes, 1);
+  			for (double[] row : allOnes)
+  				Arrays.fill(row, 1.0);
   			weightedInput[i] = new SimpleMatrix(allOnes); 
-  			activation[i] = X;
+  			activation[i] = X.transpose();
   		} 
   		// output layer
   		else if (i == hiddenLayerSize + 1) {
@@ -209,6 +214,7 @@ public class NeuralNetwork {
     SimpleMatrix[] nabla_b = new SimpleMatrix[hiddenLayerSize+2];
     // \partial J / \partial W (including U)
     SimpleMatrix[] nabla_w = new SimpleMatrix[hiddenLayerSize+2]; 
+    SimpleMatrix delta;
     
     WeightedInputAndActivation weightedInputAndActivation;
     weightedInputAndActivation = getWeightedInputAndActivation(X);
@@ -217,9 +223,9 @@ public class NeuralNetwork {
     
     
     // output layer: delta_L 
-    SimpleMatrix delta = activation[hiddenLayerSize+2].minus(Y);
-    nabla_b[hiddenLayerSize+2] = delta;
-    nabla_w[hiddenLayerSize+2] = delta.mult(activation[hiddenLayerSize+1].transpose());
+    delta = activation[hiddenLayerSize+1].minus(Y.transpose());
+    nabla_b[hiddenLayerSize+1] = delta;
+    nabla_w[hiddenLayerSize+1] = delta.mult(activation[hiddenLayerSize+1].transpose());
     
     // hidden layer, backprop
     SimpleMatrix W_l_plus_one;
@@ -227,9 +233,9 @@ public class NeuralNetwork {
     SimpleMatrix activation_l_minus_one;
     SimpleMatrix delta_l;    
     
-    for (int l = hiddenLayerSize+1; l>=1; l--) {
+    for (int l = hiddenLayerSize; l>=1; l--) {
     	  	
-    	if (l == (hiddenLayerSize+1)) {
+    	if (l == hiddenLayerSize) {
     		W_l_plus_one = U;
     	}
     	else {

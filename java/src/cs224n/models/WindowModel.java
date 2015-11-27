@@ -3,11 +3,10 @@ package cs224n.models;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.ejml.simple.SimpleMatrix;
-
 import cs224n.deep.Datum;
 import cs224n.deep.FakeNeuralNetwork;
+import cs224n.deep.NeuralNetwork;
 import cs224n.util.Configuration;
 import cs224n.util.FileIO;
 import cs224n.util.WordMap;
@@ -18,8 +17,8 @@ public class WindowModel implements Model {
   private WordMap wordMap;
 
   Configuration conf;
-  //public NeuralNetwork model;
-  public FakeNeuralNetwork model;
+  public NeuralNetwork model;
+  //public FakeNeuralNetwork model;
   
   public WindowModel(Configuration configuration) throws IOException {
     if (configuration.getWindowSize() % 2 == 0) {
@@ -27,8 +26,8 @@ public class WindowModel implements Model {
       configuration.setWindowSize(3);
     }
     conf = configuration;
-    //model = new NeuralNetwork(conf);
-    model = new FakeNeuralNetwork(conf);
+    model = new NeuralNetwork(conf);
+    //model = new FakeNeuralNetwork(conf);
     wordMap = new WordMap(conf);
   }
 
@@ -37,30 +36,35 @@ public class WindowModel implements Model {
    */
   public void train(List<Datum> trainData) {
     WordWindow window = new WordWindow(trainData, conf.getWindowSize(), wordMap);
-    
-    do {
-      int targetID = window.getTargetLabelID();
-      int[] windowIDs = window.getIDArray();
-      
-      SimpleMatrix X = idsToWordVector(windowIDs);
-      SimpleMatrix Y = targetToVector(targetID);
-      model.runBackprop(X, Y);
-    } while (window.rollWindow());
+    int maxIters = conf.getMaxIterations();
+    for (int iter = 0; iter < maxIters; iter++) {
+      do {
+        int targetID = window.getTargetLabelID();
+        int[] windowIDs = window.getIDArray();
+        
+        SimpleMatrix X = idsToWordVector(windowIDs);
+        SimpleMatrix Y = targetToVector(targetID);
+        // get gradient
+        model.backprop(X, Y);
+        //model.runBackprop(X, Y);
+        
+      } while (window.rollWindow());
+    }
   }
   
   public void test(List<Datum> testData, String outfile) {
     List<String> predictions = new ArrayList<String>();
     WordWindow window = new WordWindow(testData, conf.getWindowSize(), wordMap);
     
-    do {
-      int[] windowIDs = window.getIDArray();
-      SimpleMatrix X = idsToWordVector(windowIDs);
-      int pred = model.getBestOutputClass(X);
-      String predStr = wordMap.getTargetName(pred);
-      predictions.add(predStr);
-    } while (window.rollWindow());
-    
-    FileIO.outputScoringToFile(testData, predictions, outfile);
+//    do {
+//      int[] windowIDs = window.getIDArray();
+//      SimpleMatrix X = idsToWordVector(windowIDs);
+//      int pred = model.getBestOutputClass(X);
+//      String predStr = wordMap.getTargetName(pred);
+//      predictions.add(predStr);
+//    } while (window.rollWindow());
+//    
+//    FileIO.outputScoringToFile(testData, predictions, outfile);
   }
   
   

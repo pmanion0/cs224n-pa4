@@ -10,18 +10,15 @@ import cs224n.util.FileIO;
 public class NER {
   
   public static void main(String[] args) throws IOException {
-    
-    if (args.length < 2) {
-        System.out.println("USAGE: java -cp classes NER ../data/train ../data/dev");
-        return;
-    }     
   
+    Configuration conf = new Configuration();
+    
     // Read in the requested data files and initialize necessary data structures
-    List<Datum> trainData = FileIO.read(args[0]);
-    List<Datum> testData = FileIO.read(args[1]);
+    List<Datum> trainData = FileIO.read(conf.getTrainFilepath());
+    List<Datum> testData = FileIO.read(conf.getTestFilepath());
 
     // RUN THE WINDOWMODEL
-    Configuration conf = new Configuration();
+    
     WindowModel model = new WindowModel(conf);
       
     model.train(trainData);

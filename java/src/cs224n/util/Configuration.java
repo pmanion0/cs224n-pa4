@@ -8,9 +8,9 @@ public class Configuration {
   private String trainFilepath, testFilepath, wordVecFilepath, vocabFilepath,
     outputFile, unknownWord, targetEntities;
   private Double lambda, learningRate;
-  private Integer maxIterations, windowSize, wordVecDim;
+  private Integer maxIterations, windowSize, wordVecDim, outputDim;
   private Boolean learnWordVec, allLowercase;
-  private Integer[] hiddenDimensions;
+  private int[] hiddenDimensions;
 
   public Configuration() {
     trainFilepath = "../data/train";
@@ -24,17 +24,18 @@ public class Configuration {
     lambda = 0.000000;
     learningRate = 0.0000000;
     
-    maxIterations = 0;
+    maxIterations = 1;
     windowSize = 3;
     wordVecDim = 50;
+    outputDim = 5;
     
     learnWordVec = false;
     allLowercase = true;
     
-    hiddenDimensions = new Integer[]{10};
+    hiddenDimensions = new int[]{10};
   }
   
-  public Configuration(String opts) {
+	public Configuration(String opts) {
     this(); // Initialize defaults with Configuration()
     Map<String,String> optMap = CommandLineUtils.simpleCommandLineParser(opts.split(" "));
     this.parseConfigMap(optMap);
@@ -113,6 +114,14 @@ public class Configuration {
   public Integer getWordVecDim() {  return wordVecDim;  }
   public void setWordVecDim(Integer wordVecDim) {  this.wordVecDim = wordVecDim;  }
 
+  public Integer getOutputDim() {
+		return outputDim;
+	}
+
+	public void setOutputDim(Integer outputDim) {
+		this.outputDim = outputDim;
+	}
+
   public Boolean getLearnWordVec() {  return learnWordVec;  }
   public void setLearnWordVec(Boolean learnWordVec) {  this.learnWordVec = learnWordVec;  }
 
@@ -125,11 +134,11 @@ public class Configuration {
   public String[] getTargetEntities() {  return targetEntities.split(",");  }
   public void setTargetEntities(String entities) {  this.targetEntities = entities;  }
 
-  public Integer[] getHiddenDimensions() {  return hiddenDimensions;  }
-  public void setHiddenDimensions(Integer[] hiddenDimensions) {  this.hiddenDimensions = hiddenDimensions;  }
+  public int[] getHiddenDimensions() {  return hiddenDimensions;  }
+  public void setHiddenDimensions(int[] hiddenDimensions) {  this.hiddenDimensions = hiddenDimensions;  }
   public void setHiddenDimensions(String dimString) {
     String[] splitString = dimString.split(",");
-    Integer[] dims = new Integer[splitString.length];
+    int[] dims = new int[splitString.length];
     for (int i=0; i < splitString.length; i++)
       dims[i] = Integer.valueOf(splitString[i]);
     setHiddenDimensions(dims);
