@@ -33,7 +33,8 @@ public class TestConfigReader {
         Configuration config = new Configuration(options);
         output.add(config);
       } else {
-        String option = line.trim().split(":")[0];
+        // Prepend - to align with command line arguments (e.g. -key value)
+        String option = "-" + line.trim().split(":")[0];
         String value = line.trim().split(":")[1];
         options.put(option, value);
       }

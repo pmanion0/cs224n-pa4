@@ -49,7 +49,7 @@ public class Configuration {
   
   private void parseConfigMap(Map<String,String> map) {
     for (String key : map.keySet()) {
-      String value = map.get(key);
+      String value = map.get(key).trim();
       if (key.equals("-train"))
         setTrainFilepath(value);
       else if (key.equals("-test"))
@@ -81,7 +81,7 @@ public class Configuration {
       else if (key.equals("-entities"))
         setTargetEntities(value);
       else
-        System.err.println("ERROR: Arugment "+key+" "+value+" is not recognized");
+        System.err.println("ERROR: Argument "+key+" "+value+" is not recognized");
     }
   }
   

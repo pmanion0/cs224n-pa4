@@ -17,30 +17,30 @@ public class TestConfigReaderTest {
     List<Configuration> configs = TestConfigReader.parseFile("../testdata/testconfig.conf");
     
     Map<String,String> options = new HashMap<String,String>();
-    options.put("train","../data/train");
-    options.put("test","../data/test");
-    options.put("wordvec","../data/vocab.txt");
-    options.put("outdir","../outputs/lambda_test");
-    options.put("lambda","0.1");
-    options.put("learnrate","0.002");
-    options.put("iters","100");
-    options.put("windowsize","5");
-    options.put("wordvecdim","50");
-    options.put("lowcaseall","true");
-    options.put("hiddendim","50,10");
-    options.put("learnwordvec","false");
+    options.put("-train","../data/train");
+    options.put("-test","../data/test");
+    options.put("-wordvec","../data/vocab.txt");
+    options.put("-outfile","../outputs/lambda_test");
+    options.put("-lambda","0.1");
+    options.put("-learnrate","0.002");
+    options.put("-iters","100");
+    options.put("-windowsize","5");
+    options.put("-wordvecdim","50");
+    options.put("-lowcaseall","true");
+    options.put("-hiddendim","50,10");
+    options.put("-learnwordvec","false");
     
     assertEquals(new Configuration(options), configs.get(0));
     
-    options.put("lambda","0.01");
+    options.put("-lambda","0.01");
     assertEquals(new Configuration(options), configs.get(1));
     
-    options.put("learnrate","0.001");
-    options.put("windowsize","10");
+    options.put("-learnrate","0.001");
+    options.put("-windowsize","10");
     assertEquals(new Configuration(options), configs.get(2));
     
-    options.put("lambda","0.05");
-    options.put("learnwordvec","true");
+    options.put("-lambda","0.05");
+    options.put("-learnwordvec","true");
     assertEquals(new Configuration(options), configs.get(3));
   }
 
