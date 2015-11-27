@@ -5,6 +5,8 @@ import java.util.Map;
 
 public class Configuration {
   
+  private final String PARAMETER_DELIMITER = ",";
+  
   private String trainFilepath, testFilepath, wordVecFilepath, vocabFilepath,
     outputFile, unknownWord, targetEntities;
   private Double lambda, learningRate;
@@ -122,13 +124,13 @@ public class Configuration {
   public String getUnknownWord() {  return unknownWord;  }
   public void setUnknownWord(String unknownWord) {  this.unknownWord = unknownWord;  }
   
-  public String[] getTargetEntities() {  return targetEntities.split(",");  }
+  public String[] getTargetEntities() {  return targetEntities.split(PARAMETER_DELIMITER);  }
   public void setTargetEntities(String entities) {  this.targetEntities = entities;  }
 
   public int[] getHiddenDimensions() {  return hiddenDimensions;  }
   public void setHiddenDimensions(int[] hiddenDimensions) {  this.hiddenDimensions = hiddenDimensions;  }
   public void setHiddenDimensions(String dimString) {
-    String[] splitString = dimString.split(",");
+    String[] splitString = dimString.split(PARAMETER_DELIMITER);
     int[] dims = new int[splitString.length];
     for (int i=0; i < splitString.length; i++)
       dims[i] = Integer.valueOf(splitString[i]);
@@ -137,7 +139,7 @@ public class Configuration {
 
   /** Return the output dimension implied by targetEntities */
   public Integer getOutputDim() {
-    return targetEntities.split(",").length;
+    return targetEntities.split(PARAMETER_DELIMITER).length;
   }
   
   /**** Automatically Generated hashCode + equals Operators ****/
