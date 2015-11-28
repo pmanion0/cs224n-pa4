@@ -9,6 +9,7 @@ import cs224n.deep.FakeNeuralNetwork;
 import cs224n.deep.NeuralNetwork;
 import cs224n.util.Configuration;
 import cs224n.util.FileIO;
+import cs224n.util.PairOfSimpleMatrixArray;
 import cs224n.util.WordMap;
 import cs224n.util.WordWindow;
 
@@ -35,19 +36,29 @@ public class WindowModel implements Model {
    * Simplest SGD training
    */
   public void train(List<Datum> trainData) {
-    WordWindow window = new WordWindow(trainData, conf.getWindowSize(), wordMap);
     int maxIters = conf.getMaxIterations();
+    int trainingDataSize = trainData.size();
+    
     for (int iter = 0; iter < maxIters; iter++) {
+      WordWindow window = new WordWindow(trainData, conf.getWindowSize(), wordMap);
+      System.out.println("iteraion: " + iter);
+      int i = 0;
       do {
         int targetID = window.getTargetLabelID();
         int[] windowIDs = window.getIDArray();
-        
+
         SimpleMatrix X = idsToWordVector(windowIDs);
         SimpleMatrix Y = targetToVector(targetID);
+
         // get gradient
-        model.backprop(X, Y);
-        //model.runBackprop(X, Y);
+        PairOfSimpleMatrixArray nabla = model.backprop(X, Y);
+        SimpleMatrix updatedX = model.updateGradient(X, nabla, trainingDataSize).transpose();
         
+        // update L
+        updateWordVector(windowIDs, updatedX);
+        //model.runBackprop(X, Y);
+        i++;
+        //System.out.println(i);
       } while (window.rollWindow());
     }
   }
@@ -56,17 +67,34 @@ public class WindowModel implements Model {
     List<String> predictions = new ArrayList<String>();
     WordWindow window = new WordWindow(testData, conf.getWindowSize(), wordMap);
     
-//    do {
-//      int[] windowIDs = window.getIDArray();
-//      SimpleMatrix X = idsToWordVector(windowIDs);
-//      int pred = model.getBestOutputClass(X);
-//      String predStr = wordMap.getTargetName(pred);
-//      predictions.add(predStr);
-//    } while (window.rollWindow());
-//    
-//    FileIO.outputScoringToFile(testData, predictions, outfile);
+    do {
+      int[] windowIDs = window.getIDArray();
+      SimpleMatrix X = idsToWordVector(windowIDs);
+      int pred = model.getBestOutputClass(X);
+      String predStr = wordMap.getTargetName(pred);
+      predictions.add(predStr);
+    } while (window.rollWindow());
+    
+    FileIO.outputScoringToFile(testData, predictions, outfile);
   }
   
+  
+  /**
+   * Update word vector
+   * @param idList
+   * @param X
+   */
+  public void updateWordVector(int[] idList, SimpleMatrix X) {
+    for (int i=0; i < idList.length; i++) {
+      int wordID = idList[i];
+      // now each row represents a word vector
+      X.reshape(conf.getWindowSize(), conf.getWordVecDim());
+      double X_i[] = X.extractVector(true, i).getMatrix().getData();
+      for (int j = 0; j < conf.getWordVecDim(); j++) {
+      	wordMap.setWordVector(wordID, j, X_i[j]);
+      }
+    }
+  }
   
   /**
    * Convert a list of Word IDs into a Neural Network input vector; this

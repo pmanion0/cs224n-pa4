@@ -9,6 +9,7 @@ import org.ejml.simple.SimpleMatrix;
 import cs224n.util.Configuration;
 import cs224n.util.FileIO;
 import cs224n.util.Nabla;
+import cs224n.util.PairOfSimpleMatrixArray;
 import cs224n.util.WeightedInputAndActivation;
 
 public class NeuralNetwork {
@@ -142,18 +143,10 @@ public class NeuralNetwork {
    */
   // feed forward 
   public double[] score(SimpleMatrix X) {
-    // Run X through the entire network and return the score for each output class
-    // iterate through weight matrix W
-  	int numOfLayers = W.size();
-  	SimpleMatrix Z_i = W.get(0).mult(X).plus(b1.get(0)), Z_i_next;
   	
-  	// h = f(wx + b1) 
-  	for (int i = 0; i < numOfLayers; i++) {
-  		Z_i_next = tanh(W.get(i).mult(Z_i).plus(b1.get(i)));
-  		Z_i = Z_i_next;
-  	}  
-  	
-  	SimpleMatrix probsMatrix = softmax(U.mult(Z_i).plus(b2));
+  	PairOfSimpleMatrixArray weightedInputAndActivation = getWeightedInputAndActivation(X);
+  	SimpleMatrix probsMatrix = weightedInputAndActivation.getSecondSimpleMatrixArray()[hiddenDims.length + 1];
+
   	double[] probs = new double[outputDim];
   	
   	for ( int i = 0; i < outputDim; i++) {
@@ -164,7 +157,7 @@ public class NeuralNetwork {
   }
   
 
-  public WeightedInputAndActivation getWeightedInputAndActivation(SimpleMatrix X) {
+  public PairOfSimpleMatrixArray getWeightedInputAndActivation(SimpleMatrix X) {
   	int hiddenLayerSize = hiddenDims.length;
   	// a^l
   	SimpleMatrix [] activation = new SimpleMatrix[hiddenLayerSize + 2];
@@ -193,7 +186,7 @@ public class NeuralNetwork {
   		}
   	} // end for
   	
-  	return new WeightedInputAndActivation(weightedInput, activation);
+  	return new PairOfSimpleMatrixArray(weightedInput, activation);
   }
   
   
@@ -207,7 +200,7 @@ public class NeuralNetwork {
    * @param Y - Correct output labels for the input example X
    * @return layer-by-layer of the gradient for the cost function
    */
-  public Nabla backprop(SimpleMatrix X, SimpleMatrix Y) {
+  public PairOfSimpleMatrixArray backprop(SimpleMatrix X, SimpleMatrix Y) {
     epochCount++;
     int hiddenLayerSize = hiddenDims.length;
     // \partial J / \partial b
@@ -216,16 +209,18 @@ public class NeuralNetwork {
     SimpleMatrix[] nabla_w = new SimpleMatrix[hiddenLayerSize+2]; 
     SimpleMatrix delta;
     
-    WeightedInputAndActivation weightedInputAndActivation;
+    PairOfSimpleMatrixArray weightedInputAndActivation;
     weightedInputAndActivation = getWeightedInputAndActivation(X);
-    SimpleMatrix[] weightedInput = weightedInputAndActivation.weightedInput;
-    SimpleMatrix[] activation = weightedInputAndActivation.activation;
+    SimpleMatrix[] weightedInput = weightedInputAndActivation.getFirstSimpleMatrixArray();
+    SimpleMatrix[] activation = weightedInputAndActivation.getSecondSimpleMatrixArray();
     
     
     // output layer: delta_L 
-    delta = activation[hiddenLayerSize+1].minus(Y.transpose());
+    delta = activation[hiddenLayerSize+1].minus(Y.transpose()); // 5 by 1
     nabla_b[hiddenLayerSize+1] = delta;
-    nabla_w[hiddenLayerSize+1] = delta.mult(activation[hiddenLayerSize+1].transpose());
+    //System.out.println("delta: " + delta);
+    //System.out.println("activation[hiddenLayerSize]: " + activation[hiddenLayerSize]);
+    nabla_w[hiddenLayerSize+1] = delta.mult(activation[hiddenLayerSize].transpose());
     
     // hidden layer, backprop
     SimpleMatrix W_l_plus_one;
@@ -254,10 +249,30 @@ public class NeuralNetwork {
     SimpleMatrix delta_0 = W.get(1).transpose().mult(delta);
     nabla_b[0] = delta_0;
     nabla_w[0] = delta_0;
-    return new Nabla(nabla_w, nabla_b);
+    return new PairOfSimpleMatrixArray(nabla_w, nabla_b);
   }
   
   // TODO: need a method to update gradient
+  public SimpleMatrix updateGradient(SimpleMatrix X, PairOfSimpleMatrixArray nabla, int trainingDataSize) {
+  	SimpleMatrix[] nabla_w = nabla.getFirstSimpleMatrixArray();
+  	SimpleMatrix[] nabla_b = nabla.getSecondSimpleMatrixArray();
+  	int hiddenLayerSize = hiddenDims.length;
+  	
+  	// update output layer U, b2
+  	double coef = alpha * (lambda / trainingDataSize);
+  	U = U.scale(1 - coef).minus(nabla_w[hiddenLayerSize+1].scale(alpha));
+  	b2 = b2.minus(nabla_b[hiddenLayerSize+1].scale(alpha));
+  	
+  	// update hidden layer W and b1
+  	for (int l = 1; l <= hiddenLayerSize; l++) {
+  		W.set(l, W.get(l).scale(1 - coef).minus(nabla_w[l].scale(alpha)));
+  		b1.set(l, b1.get(l).minus(nabla_b[l].scale(alpha)));
+  	}
+  	
+  	// update X
+  	SimpleMatrix X_transpose = X.transpose().minus(nabla_b[0].scale(alpha));
+  	return X_transpose.transpose();
+  }
 
   /**
    * Run one iteration of Backpropagation based on input X and correct output Y

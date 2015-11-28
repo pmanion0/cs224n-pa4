@@ -109,6 +109,13 @@ public class WordMap {
   }
   
   /**
+   * Set 
+   */
+  public void setWordVector(int row, int col, double value) {
+  	wordVector.set(row, col, value);
+  }
+  
+  /**
    * Set the Unknown Word
    */
   public void setUnknownWord(String s) {

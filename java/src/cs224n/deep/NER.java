@@ -18,6 +18,7 @@ public class NER {
   
     Configuration conf = new Configuration();
     conf.setTrainFilepath(args[0]);
+    //System.out.println("args[0]: " + args[1]);
     conf.setTestFilepath(args[1]);
     conf.setOutputFile("../ner.out");
     
