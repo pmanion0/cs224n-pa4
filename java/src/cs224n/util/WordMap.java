@@ -109,7 +109,7 @@ public class WordMap {
   }
   
   /**
-   * Set 
+   * Set the value of a word vector
    */
   public void setWordVector(int row, int col, double value) {
   	wordVector.set(row, col, value);

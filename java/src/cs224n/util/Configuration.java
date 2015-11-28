@@ -23,10 +23,10 @@ public class Configuration {
     unknownWord = "UUUNKKK";
     targetEntities = "O,LOC,MISC,ORG,PER";
     
-    lambda = 0.000000;
-    learningRate = 0.0000000;
+    lambda = 0.0;
+    learningRate = 1e-4;
     
-    maxIterations = 1;
+    maxIterations = 10;
     windowSize = 3;
     wordVecDim = 50;
     
