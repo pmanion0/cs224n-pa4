@@ -2,11 +2,14 @@ package cs224n.models;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import org.ejml.simple.SimpleMatrix;
 import cs224n.deep.Datum;
 import cs224n.deep.FakeNeuralNetwork;
 import cs224n.deep.NeuralNetwork;
+import cs224n.document.Document;
+import cs224n.document.DocumentSet;
 import cs224n.util.Configuration;
 import cs224n.util.FileIO;
 import cs224n.util.PairOfSimpleMatrixArray;
@@ -36,32 +39,42 @@ public class WindowModel implements Model {
    * Simplest SGD training
    */
   public void train(List<Datum> trainData) {
+    DocumentSet docs = new DocumentSet(trainData);
+    int iterCount = 0;
     int maxIters = conf.getMaxIterations();
-    int trainingDataSize = trainData.size();
+    int trainingObs = trainData.size();  // TODO: Is this actually the right value?
     
-    for (int iter = 0; iter < maxIters; iter++) {
-      WordWindow window = new WordWindow(trainData, conf.getWindowSize(), wordMap);
-      System.out.println("iteraion: " + iter);
-      int i = 0;
-      do {
-        int targetID = window.getTargetLabelID();
-        int[] windowIDs = window.getIDArray();
-
-        SimpleMatrix X = idsToWordVector(windowIDs);
-        SimpleMatrix Y = targetToVector(targetID);
-
-        // get gradient
-        PairOfSimpleMatrixArray nabla = model.backprop(X, Y);
-        SimpleMatrix updatedX = model.updateGradient(X, nabla, trainingDataSize).transpose();
-        
-        // update L
-        updateWordVector(windowIDs, updatedX);
-        //model.runBackprop(X, Y);
-        i++;
-        //System.out.println(i);
-      } while (window.rollWindow());
+    Iterator<Document> iter = docs.iterator();
+    while (iterCount < maxIters) {
+      if (!iter.hasNext())
+        iter = docs.iterator();
+      Document d = iter.next();
+      WordWindow window = new WordWindow(d, conf.getWindowSize(), wordMap);
+      trainDocument(window, trainingObs); // Yuck!
     }
   }
+  
+  /**
+   * Train the model based on a specific sequence of WordWindows
+   */
+  public void trainDocument(WordWindow window, int trainingObs) {
+    do {
+      int targetID = window.getTargetLabelID();
+      int[] windowIDs = window.getIDArray();
+      
+      SimpleMatrix X = idsToWordVector(windowIDs);
+      SimpleMatrix Y = targetToVector(targetID);
+      
+      // Get the updated X with the gradient
+      PairOfSimpleMatrixArray nabla = model.backprop(X, Y);
+      SimpleMatrix updatedX = model.updateGradient(X, nabla, trainingObs).transpose();
+      
+      // Update the word vectors
+      updateWordVector(windowIDs, updatedX);
+    } while (window.rollWindow());
+  }
+  
+   
   
   public void test(List<Datum> testData, String outfile) {
     List<String> predictions = new ArrayList<String>();
