@@ -143,8 +143,20 @@ public class Configuration {
   public Integer getOutputDim() {
     return targetEntities.split(PARAMETER_DELIMITER).length;
   }
+ 
   
-  /**** Automatically Generated hashCode + equals Operators ****/
+  /**** Automatically Generated toString, hashCode, and equals ****/
+  @Override
+  public String toString() {
+    return "Configuration [PARAMETER_DELIMITER=" + PARAMETER_DELIMITER + ", trainFilepath=" + trainFilepath
+        + ", testFilepath=" + testFilepath + ", wordVecFilepath=" + wordVecFilepath + ", vocabFilepath=" + vocabFilepath
+        + ", outputFile=" + outputFile + ", unknownWord=" + unknownWord + ", targetEntities=" + targetEntities
+        + ", lambda=" + lambda + ", learningRate=" + learningRate + ", maxIterations=" + maxIterations + ", windowSize="
+        + windowSize + ", wordVecDim=" + wordVecDim + ", learnWordVec=" + learnWordVec + ", allLowercase="
+        + allLowercase + ", hiddenDimensions=" + Arrays.toString(hiddenDimensions) + "]";
+  }
+  
+  
   @Override
   public int hashCode() {
     final int prime = 31;
