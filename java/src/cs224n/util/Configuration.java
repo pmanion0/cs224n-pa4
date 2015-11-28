@@ -38,8 +38,10 @@ public class Configuration {
   
 	public Configuration(String opts) {
     this(); // Initialize defaults with Configuration()
-    Map<String,String> optMap = CommandLineUtils.simpleCommandLineParser(opts.split(" "));
-    this.parseConfigMap(optMap);
+    if (opts.trim().length() > 0) {
+      Map<String,String> optMap = CommandLineUtils.simpleCommandLineParser(opts.split(" "));
+      this.parseConfigMap(optMap);
+    }
   }
   
   public Configuration(Map<String,String> optMap) {
