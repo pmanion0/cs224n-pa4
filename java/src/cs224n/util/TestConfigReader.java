@@ -32,7 +32,7 @@ public class TestConfigReader {
       if (isSeparator(line)) {
         Configuration config = new Configuration(options);
         output.add(config);
-      } else {
+      } else if (!line.trim().equals("")) {
         // Prepend - to align with command line arguments (e.g. -key value)
         String option = "-" + line.trim().split(":")[0];
         String value = line.trim().split(":")[1];
