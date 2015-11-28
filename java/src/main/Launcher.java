@@ -11,10 +11,8 @@ import cs224n.util.FileIO;
 public class Launcher {
   
   public static void main(String[] args) throws IOException {
-    if (args.length < 2) {
-      System.out.println("USAGE: java -cp classes TestLauncher <test_config_file>");
-      return;
-    }
+    if (args.length == 0)
+      System.out.println("WARNING: No arguments found - using all default values");
     String commandLineArgString = String.join(" ", args);
     Configuration conf = new Configuration(commandLineArgString);
     run(conf);
@@ -25,12 +23,15 @@ public class Launcher {
    * @param commandLineArguments
    */
   public static void run(Configuration conf) throws IOException {
+    System.out.println("Running NER Classifier with options:");
+    System.out.println(conf);
+    
     List<Datum> trainData = FileIO.read(conf.getTrainFilepath());
     List<Datum> testData = FileIO.read(conf.getTestFilepath());
     WindowModel model = new WindowModel(conf);
       
     model.train(trainData);
-    model.test(testData, "../ner.out");
+    model.test(testData, conf.getOutputFile());
   }
 
 }
