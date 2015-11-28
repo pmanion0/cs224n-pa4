@@ -51,6 +51,7 @@ public class WindowModel implements Model {
       Document d = iter.next();
       WordWindow window = new WordWindow(d, conf.getWindowSize(), wordMap);
       trainDocument(window, trainingObs); // Yuck!
+      iterCount++;
     }
   }
   
