@@ -70,8 +70,9 @@ public class WindowModel implements Model {
       PairOfSimpleMatrixArray nabla = model.backprop(X, Y);
       SimpleMatrix updatedX = model.updateGradient(X, nabla, trainingObs).transpose();
       
-      // Update the word vectors
-      updateWordVector(windowIDs, updatedX);
+      // Update the word vectors if option is turned on 
+      if (conf.getLearnWordVec())
+        updateWordVector(windowIDs, updatedX);
     } while (window.rollWindow());
   }
   
