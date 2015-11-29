@@ -29,9 +29,16 @@ The list of possible options, with their defaults, is provided below:
 
 ## TestConfigLauncher
 
-TestConfigLauncher is used to run a series of tests that are described in a test configuration file. This file allows you to submit a number of closely related configurations to test the impact of different settings. Use the following command to launch the program from the cs224n-pa4/java folder:
+TestConfigLauncher is used to run a series of tests that are described in a test configuration file. This file allows you to submit a number of closely related configurations to assess the impact of different settings. Use the following command to launch the program from the cs224n-pa4/java folder:
 
-`java -Xmx2g -cp "classes:extlib/*" main.TestConfigLauncher <test_config_file>`
+`java -Xmx2g -cp "classes:extlib/*" main.TestConfigLauncher <test_config_file> <?output_dir>`
+
+     Parameter    | Required? | Description
+------------------|-----------|------------
+test_config\_file |    Yes    | Path to a test configuration file (format described below)
+output_dir        |    No     | Root directory to put all scored test outputs (labeled as test\_1... test_N) along with a summary file of all tests
+
+<br/>
 
 The test config file is parsed by the TestConfigurationReader. This reader begins by initializing a default configuration and proceeds to read all user defined settings until a test case delimiter `----` is encountered. At that point, a test run will be created with the settings *as of that point* in the file. This can be done repeatedly to define as many test cases as you would like.
 
@@ -76,4 +83,4 @@ All options outlined in the Launcher documentation above are valid here, but **m
 ---- Create a 3rd similar run but now learnrate = 0.001 (lambda is still 0.03)
 ```
 
-Notice above that for the 3rd run, the first learnrate setting is overridden by the second learnrate call!
+Notice above that for the 3rd run, the first `learnrate` setting is overridden by the second `learnrate` call!
