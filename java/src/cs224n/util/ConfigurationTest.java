@@ -15,6 +15,7 @@ public class ConfigurationTest {
         + "-outfile /tmp/file.txt "
         + "-unkword zebra "
         + "-entities O,LOC,MISC,ORG,PER "
+        + "-conlleval /wiz/bang "
         + "-lambda 0.00304 "
         + "-learnrate 0.00342 "
         + "-iters 33 "
@@ -32,6 +33,7 @@ public class ConfigurationTest {
     assertEquals(conf.getVocabFilepath(), "/voc/ab");
     assertEquals(conf.getOutputFile(), "/tmp/file.txt");
     assertEquals(conf.getUnknownWord(), "zebra");
+    assertEquals(conf.getConllevalPath(), "/wiz/bang");
     assertArrayEquals(conf.getTargetEntities(), new String[]{"O","LOC","MISC","ORG","PER"});
     assertTrue(conf.getOutputDim() == 5);
     

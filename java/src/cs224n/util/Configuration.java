@@ -8,7 +8,7 @@ public class Configuration {
   private final String PARAMETER_DELIMITER = ",";
   
   private String trainFilepath, testFilepath, wordVecFilepath, vocabFilepath,
-    outputFile, unknownWord, targetEntities;
+    outputFile, unknownWord, targetEntities, conllevalPath;
   private Double lambda, learningRate;
   private Integer maxIterations, windowSize, wordVecDim;
   private Boolean learnWordVec, allLowercase;
@@ -22,6 +22,7 @@ public class Configuration {
     outputFile = "../scored.out";
     unknownWord = "UUUNKKK";
     targetEntities = "O,LOC,MISC,ORG,PER";
+    conllevalPath = "../conlleval";
     
     lambda = 0.0;
     learningRate = 1e-4;
@@ -82,6 +83,8 @@ public class Configuration {
         setUnknownWord(value);
       else if (key.equals("-entities"))
         setTargetEntities(value);
+      else if (key.equals("-conlleval"))
+        setConllevalPath(value);
       else
         System.err.println("ERROR: Argument "+key+" "+value+" is not recognized");
     }
@@ -129,6 +132,9 @@ public class Configuration {
   public String[] getTargetEntities() {  return targetEntities.split(PARAMETER_DELIMITER);  }
   public void setTargetEntities(String entities) {  this.targetEntities = entities;  }
 
+  public String getConllevalPath() {  return conllevalPath;  }
+  public void setConllevalPath(String conllevalPath) {  this.conllevalPath = conllevalPath;  }
+
   public int[] getHiddenDimensions() {  return hiddenDimensions;  }
   public void setHiddenDimensions(int[] hiddenDimensions) {  this.hiddenDimensions = hiddenDimensions;  }
   public void setHiddenDimensions(String dimString) {
@@ -143,25 +149,19 @@ public class Configuration {
   public Integer getOutputDim() {
     return targetEntities.split(PARAMETER_DELIMITER).length;
   }
- 
+
   
-  /**** Automatically Generated toString, hashCode, and equals ****/
-  @Override
-  public String toString() {
-    return "Configuration [PARAMETER_DELIMITER=" + PARAMETER_DELIMITER + ", trainFilepath=" + trainFilepath
-        + ", testFilepath=" + testFilepath + ", wordVecFilepath=" + wordVecFilepath + ", vocabFilepath=" + vocabFilepath
-        + ", outputFile=" + outputFile + ", unknownWord=" + unknownWord + ", targetEntities=" + targetEntities
-        + ", lambda=" + lambda + ", learningRate=" + learningRate + ", maxIterations=" + maxIterations + ", windowSize="
-        + windowSize + ", wordVecDim=" + wordVecDim + ", learnWordVec=" + learnWordVec + ", allLowercase="
-        + allLowercase + ", hiddenDimensions=" + Arrays.toString(hiddenDimensions) + "]";
-  }
-  
+  /**********************************************************
+   *  Automatically Generated toString, hashCode, and equals
+   **********************************************************/
   
   @Override
   public int hashCode() {
     final int prime = 31;
     int result = 1;
+    result = prime * result + ((PARAMETER_DELIMITER == null) ? 0 : PARAMETER_DELIMITER.hashCode());
     result = prime * result + ((allLowercase == null) ? 0 : allLowercase.hashCode());
+    result = prime * result + ((conllevalPath == null) ? 0 : conllevalPath.hashCode());
     result = prime * result + Arrays.hashCode(hiddenDimensions);
     result = prime * result + ((lambda == null) ? 0 : lambda.hashCode());
     result = prime * result + ((learnWordVec == null) ? 0 : learnWordVec.hashCode());
@@ -188,10 +188,20 @@ public class Configuration {
     if (getClass() != obj.getClass())
       return false;
     Configuration other = (Configuration) obj;
+    if (PARAMETER_DELIMITER == null) {
+      if (other.PARAMETER_DELIMITER != null)
+        return false;
+    } else if (!PARAMETER_DELIMITER.equals(other.PARAMETER_DELIMITER))
+      return false;
     if (allLowercase == null) {
       if (other.allLowercase != null)
         return false;
     } else if (!allLowercase.equals(other.allLowercase))
+      return false;
+    if (conllevalPath == null) {
+      if (other.conllevalPath != null)
+        return false;
+    } else if (!conllevalPath.equals(other.conllevalPath))
       return false;
     if (!Arrays.equals(hiddenDimensions, other.hiddenDimensions))
       return false;
@@ -262,5 +272,18 @@ public class Configuration {
       return false;
     return true;
   }
+
+  @Override
+  public String toString() {
+    return "Configuration [PARAMETER_DELIMITER=" + PARAMETER_DELIMITER + ", trainFilepath=" + trainFilepath
+        + ", testFilepath=" + testFilepath + ", wordVecFilepath=" + wordVecFilepath + ", vocabFilepath=" + vocabFilepath
+        + ", outputFile=" + outputFile + ", unknownWord=" + unknownWord + ", targetEntities=" + targetEntities
+        + ", conllevalPath=" + conllevalPath + ", lambda=" + lambda + ", learningRate=" + learningRate
+        + ", maxIterations=" + maxIterations + ", windowSize=" + windowSize + ", wordVecDim=" + wordVecDim
+        + ", learnWordVec=" + learnWordVec + ", allLowercase=" + allLowercase + ", hiddenDimensions="
+        + Arrays.toString(hiddenDimensions) + "]";
+  }
+ 
+
   
 }
