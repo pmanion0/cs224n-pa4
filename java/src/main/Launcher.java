@@ -5,6 +5,7 @@ import java.util.List;
 
 import cs224n.deep.Datum;
 import cs224n.models.WindowModel;
+import cs224n.util.CoNLLEval;
 import cs224n.util.Configuration;
 import cs224n.util.FileIO;
 
@@ -32,6 +33,10 @@ public class Launcher {
       
     model.train(trainData);
     model.test(testData, conf.getOutputFile());
+    
+    // Run the CoNLL Evaluator on the output and print to console
+    CoNLLEval tester = new CoNLLEval(conf.getConllevalPath());
+    tester.eval(conf.getOutputFile());
   }
 
 }
