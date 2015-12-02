@@ -49,12 +49,14 @@ public class FileIO {
     List<Datum> data = new ArrayList<Datum>();
     BufferedReader in = new BufferedReader(new FileReader(filename));
     for (String line = in.readLine(); line != null; line = in.readLine()) {
-      if (line.trim().length() == 0) {
-        continue;
+      String word = "";
+      String label = "";
+      
+      if (line.trim().length() > 0) {
+        String[] bits = line.split("\\s+");
+        word = bits[0];
+        label = bits[1];
       }
-      String[] bits = line.split("\\s+");
-      String word = bits[0];
-      String label = bits[1];
 
       Datum datum = new Datum(word, label);
       data.add(datum);
