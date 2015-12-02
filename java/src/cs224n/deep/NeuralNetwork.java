@@ -116,7 +116,6 @@ public class NeuralNetwork implements ObjectiveFunction {
   
   /**
    * Return softmax of input matrix z
-   * 
    */
   public SimpleMatrix softmax(SimpleMatrix z) {
   	// check input dimension of z
@@ -183,21 +182,22 @@ public class NeuralNetwork implements ObjectiveFunction {
   	return new PairOfSimpleMatrixArray(weightedInput, activation);
   }
   
-  
+  /**
+   * Calculate the network's cross entropy error for the input X and output Y
+   */
   public double crossEntropyCost(SimpleMatrix X, SimpleMatrix Y) {
   	double[] probs = score(X);
   	double error = 0.0;
+  	// Calculate Negative Log-Likelihood -- J(theta)
   	for (int i = 0; i < outputDim; i++) {
   		double y_i = Y.get(i);
   		double p_i = probs[i];
   		error -= y_i * Math.log(p_i) + (1 - y_i) * Math.log(1 - p_i);
   	}
-  	// regularization
-  	// W
+  	// Include Regularization Cost -- J_R(theta)
   	for (int i = 0; i < W.size(); i++) {
   		error += lambda / 2 * W.get(i).elementMult(W.get(i)).elementSum();
   	}
- 	// U
   	error += lambda / 2 * U.elementMult(U).elementSum();
   	
   	return error;
@@ -364,9 +364,8 @@ public class NeuralNetwork implements ObjectiveFunction {
     return bestOutputClass;
   }
   
-  public double valueAt(SimpleMatrix a, SimpleMatrix b) { 
-    // TODO: Implement the valueAt functino for Gradient Checking
-    return 0.0;
+  public double valueAt(SimpleMatrix Y, SimpleMatrix X) { 
+    return crossEntropyCost(X, Y);
   }
 
 }
