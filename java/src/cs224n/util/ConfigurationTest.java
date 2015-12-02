@@ -21,6 +21,7 @@ public class ConfigurationTest {
         + "-iters 33 "
         + "-windowsize 72 "
         + "-wordvecdim 394 "
+        + "-trainevalfreq 384 "
         + "-learnwordvec false "
         + "-lowcaseall true "
         + "-hiddendim 100";
@@ -43,6 +44,7 @@ public class ConfigurationTest {
     assertTrue(conf.getMaxIterations() == 33);
     assertTrue(conf.getWindowSize() == 72);
     assertTrue(conf.getWordVecDim() == 394);
+    assertTrue(conf.getTrainEvalFreq() == 384);
     
     assertTrue(conf.getAllLowercase());
     assertFalse(conf.getLearnWordVec());

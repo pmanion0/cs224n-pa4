@@ -10,7 +10,7 @@ public class Configuration {
   private String trainFilepath, testFilepath, wordVecFilepath, vocabFilepath,
     outputFile, unknownWord, targetEntities, conllevalPath;
   private Double lambda, learningRate;
-  private Integer maxIterations, windowSize, wordVecDim;
+  private Integer maxIterations, windowSize, wordVecDim, trainEvalFreq;
   private Boolean learnWordVec, allLowercase;
   private int[] hiddenDimensions;
 
@@ -30,6 +30,7 @@ public class Configuration {
     maxIterations = 10;
     windowSize = 3;
     wordVecDim = 50;
+    trainEvalFreq = 0;
     
     learnWordVec = false;
     allLowercase = true;
@@ -85,6 +86,8 @@ public class Configuration {
         setTargetEntities(value);
       else if (key.equals("-conlleval"))
         setConllevalPath(value);
+      else if (key.equals("-trainevalfreq"))
+        setTrainEvalFreq(Integer.valueOf(value));
       else
         System.err.println("ERROR: Argument "+key+" "+value+" is not recognized");
     }
@@ -150,11 +153,15 @@ public class Configuration {
     return targetEntities.split(PARAMETER_DELIMITER).length;
   }
 
+  public Integer getTrainEvalFreq() {  return trainEvalFreq;  }
+  public void setTrainEvalFreq(Integer trainEvalFreq) {  this.trainEvalFreq = trainEvalFreq;  }
+
+
+
   
   /**********************************************************
    *  Automatically Generated toString, hashCode, and equals
    **********************************************************/
-  
   @Override
   public int hashCode() {
     final int prime = 31;
@@ -170,6 +177,7 @@ public class Configuration {
     result = prime * result + ((outputFile == null) ? 0 : outputFile.hashCode());
     result = prime * result + ((targetEntities == null) ? 0 : targetEntities.hashCode());
     result = prime * result + ((testFilepath == null) ? 0 : testFilepath.hashCode());
+    result = prime * result + ((trainEvalFreq == null) ? 0 : trainEvalFreq.hashCode());
     result = prime * result + ((trainFilepath == null) ? 0 : trainFilepath.hashCode());
     result = prime * result + ((unknownWord == null) ? 0 : unknownWord.hashCode());
     result = prime * result + ((vocabFilepath == null) ? 0 : vocabFilepath.hashCode());
@@ -240,6 +248,11 @@ public class Configuration {
         return false;
     } else if (!testFilepath.equals(other.testFilepath))
       return false;
+    if (trainEvalFreq == null) {
+      if (other.trainEvalFreq != null)
+        return false;
+    } else if (!trainEvalFreq.equals(other.trainEvalFreq))
+      return false;
     if (trainFilepath == null) {
       if (other.trainFilepath != null)
         return false;
@@ -280,10 +293,8 @@ public class Configuration {
         + ", outputFile=" + outputFile + ", unknownWord=" + unknownWord + ", targetEntities=" + targetEntities
         + ", conllevalPath=" + conllevalPath + ", lambda=" + lambda + ", learningRate=" + learningRate
         + ", maxIterations=" + maxIterations + ", windowSize=" + windowSize + ", wordVecDim=" + wordVecDim
-        + ", learnWordVec=" + learnWordVec + ", allLowercase=" + allLowercase + ", hiddenDimensions="
-        + Arrays.toString(hiddenDimensions) + "]";
+        + ", trainEvalFreq=" + trainEvalFreq + ", learnWordVec=" + learnWordVec + ", allLowercase=" + allLowercase
+        + ", hiddenDimensions=" + Arrays.toString(hiddenDimensions) + "]";
   }
- 
-
   
 }
