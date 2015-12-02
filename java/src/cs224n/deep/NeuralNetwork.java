@@ -367,5 +367,13 @@ public class NeuralNetwork implements ObjectiveFunction {
   public double valueAt(SimpleMatrix Y, SimpleMatrix X) { 
     return crossEntropyCost(X, Y);
   }
+  
+  public List<SimpleMatrix> getWeightList() {
+    List<SimpleMatrix> weights = new ArrayList<SimpleMatrix>();
+    for (SimpleMatrix w_i : this.W)
+      weights.add(w_i);
+    weights.add(U);
+    return weights;
+  }
 
 }
