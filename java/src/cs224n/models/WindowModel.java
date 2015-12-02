@@ -49,8 +49,11 @@ public class WindowModel implements Model {
     
     Iterator<Document> iter = docs.iterator();
     while (iterCount < maxIters) {
-      if (!iter.hasNext())
+      // If we ran through the DocumentSet, shuffle, and relaunch the iterator
+      if (!iter.hasNext()) {
+        docs.shuffle();
         iter = docs.iterator();
+      }
       Document d = iter.next();
       WordWindow window = new WordWindow(d, conf.getWindowSize(), wordMap);
       trainDocument(window, trainingObs); // Yuck!
