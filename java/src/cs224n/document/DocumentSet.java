@@ -1,6 +1,7 @@
 package cs224n.document;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import cs224n.deep.Datum;
@@ -24,8 +25,12 @@ public class DocumentSet extends ArrayList<Document> {
         wordList.add(d);
       }
     }
-    // Add 
+    // Add every document with positive size
     if (wordList.size() > 0)
       this.add(new Document(wordList));
+  }
+  
+  public void shuffle() {
+    Collections.shuffle(this);
   }
 }
