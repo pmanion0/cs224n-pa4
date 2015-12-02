@@ -108,4 +108,20 @@ public class WordWindowTest {
     // Roll should return false as window is complete
     assertFalse(test.rollWindow());
   }
+  
+  @Test
+  public void testOneWordWindow3() {
+    List<Datum> tinyExample = new ArrayList<Datum>();
+    tinyExample.add(new Datum("in", ""));
+    
+    WordWindow test = new WordWindow(tinyExample, 3, map);
+    
+    String[] windowStrAnswer = new String[]{"<s>","in","</s>"};
+    assertArrayEquals(windowStrAnswer, test.getWordArray());
+    
+    int[] windowIntAnswer = new int[]{5,3,5};
+    assertArrayEquals(windowIntAnswer, test.getIDArray());
+    
+    assertFalse(test.rollWindow());
+  }
 }

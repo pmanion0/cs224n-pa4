@@ -36,7 +36,7 @@ public class WordWindow {
     }
     // Fill the remaining spots with words
     for (int j=0; j < windowSize-tailSize; j++) {
-      String newWord = data.get(j).word;
+      String newWord = (j < data.size() ? data.get(j).word : endTag);
       windowStr.add(newWord);
       windowIDs.add(wordMap.getWordNum(newWord));
       nextWordIndex++;
