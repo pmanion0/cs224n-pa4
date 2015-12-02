@@ -42,7 +42,7 @@ public class WindowModel implements Model {
   public void train(List<Datum> trainData) {
     DocumentSet docs = new DocumentSet(trainData);
     int iterCount = 0;
-    int trainingObs = trainData.size();  // TODO: Is this actually the right value?
+    int trainingObs = docs.size();
     int trainEvalFreq = conf.getTrainEvalFreq() * trainingObs;
     int maxIters = conf.getMaxIterations() * trainingObs;
     CoNLLEval tester = new CoNLLEval(conf.getConllevalPath());
@@ -56,7 +56,7 @@ public class WindowModel implements Model {
       }
       Document d = iter.next();
       WordWindow window = new WordWindow(d, conf.getWindowSize(), wordMap);
-      trainDocument(window, trainingObs); // Yuck!
+      trainDocument(window);
       iterCount++;
       // Evaluate the model at the requested frequency during training
       if (trainEvalFreq > 0 && (iterCount % trainEvalFreq) == 0) {
@@ -71,7 +71,7 @@ public class WindowModel implements Model {
   /**
    * Train the model based on a specific sequence of WordWindows
    */
-  public void trainDocument(WordWindow window, int trainingObs) {
+  public void trainDocument(WordWindow window) {
     do {
       int targetID = window.getTargetLabelID();
       int[] windowIDs = window.getIDArray();
