@@ -81,9 +81,9 @@ public class WindowModel implements Model {
       // Get the updated X with the gradient
       PairOfSimpleMatrixArray nabla = model.backprop(X, Y);
       // Check gradient;
-      SimpleMatrix[] nabla_w = nabla.getFirstSimpleMatrixArray();
-      SimpleMatrix[] emp_nabla_w = model.empiricalNabla(X, Y);
-      model.checkGradient(nabla_w, emp_nabla_w);
+      //SimpleMatrix[] nabla_w = nabla.getFirstSimpleMatrixArray();
+      //SimpleMatrix[] emp_nabla_w = model.empiricalNabla(X, Y);
+      //model.checkGradient(nabla_w, emp_nabla_w);
       SimpleMatrix updatedX = model.updateGradient(X, nabla).transpose();
       
       // Update the word vectors if option is turned on 
