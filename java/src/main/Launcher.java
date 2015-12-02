@@ -32,7 +32,10 @@ public class Launcher {
     WindowModel model = new WindowModel(conf);
       
     model.train(trainData);
-    model.test(testData, conf.getOutputFile());
+    
+    List<String> predictions = model.test(testData);
+    
+    FileIO.outputScoringToFile(testData, predictions, conf.getOutputFile());
     
     // Run the CoNLL Evaluator on the output and print to console
     CoNLLEval tester = new CoNLLEval(conf.getConllevalPath());

@@ -10,6 +10,7 @@ import cs224n.deep.FakeNeuralNetwork;
 import cs224n.deep.NeuralNetwork;
 import cs224n.document.Document;
 import cs224n.document.DocumentSet;
+import cs224n.util.CoNLLEval;
 import cs224n.util.Configuration;
 import cs224n.util.FileIO;
 import cs224n.util.PairOfSimpleMatrixArray;
@@ -41,17 +42,29 @@ public class WindowModel implements Model {
   public void train(List<Datum> trainData) {
     DocumentSet docs = new DocumentSet(trainData);
     int iterCount = 0;
-    int maxIters = conf.getMaxIterations();
     int trainingObs = trainData.size();  // TODO: Is this actually the right value?
+    int trainEvalFreq = conf.getTrainEvalFreq() * trainingObs;
+    int maxIters = conf.getMaxIterations() * trainingObs;
+    CoNLLEval tester = new CoNLLEval(conf.getConllevalPath());
     
     Iterator<Document> iter = docs.iterator();
     while (iterCount < maxIters) {
-      if (!iter.hasNext())
+      // If we ran through the DocumentSet, shuffle, and relaunch the iterator
+      if (!iter.hasNext()) {
+        docs.shuffle();
         iter = docs.iterator();
+      }
       Document d = iter.next();
       WordWindow window = new WordWindow(d, conf.getWindowSize(), wordMap);
       trainDocument(window, trainingObs); // Yuck!
       iterCount++;
+      // Evaluate the model at the requested frequency during training
+      if (trainEvalFreq > 0 && (iterCount % trainEvalFreq) == 0) {
+        System.out.println("  [Test Performance at Iteration " + iterCount + "]");
+        List<String> curPredictions = this.test(trainData);
+        List<String> scoredOutput = tester.mergeDataForOutput(trainData, curPredictions);
+        tester.eval(scoredOutput);
+      }
     }
   }
   
@@ -82,7 +95,7 @@ public class WindowModel implements Model {
   
    
   
-  public void test(List<Datum> testData, String outfile) {
+  public List<String> test(List<Datum> testData) {
     List<String> predictions = new ArrayList<String>();
     WordWindow window = new WordWindow(testData, conf.getWindowSize(), wordMap);
     
@@ -94,7 +107,7 @@ public class WindowModel implements Model {
       predictions.add(predStr);
     } while (window.rollWindow());
     
-    FileIO.outputScoringToFile(testData, predictions, outfile);
+    return predictions;
   }
   
   

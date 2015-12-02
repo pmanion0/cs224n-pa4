@@ -12,5 +12,5 @@ import cs224n.deep.Datum;
  */
 public interface Model {
   public void train(List<Datum> trainData);
-  public void test(List<Datum> testData, String outfile);
+  public List<String> test(List<Datum> testData);
 }

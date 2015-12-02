@@ -6,7 +6,10 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.util.ArrayList;
 import java.util.List;
+
+import cs224n.deep.Datum;
 
 public class CoNLLEval {
   
@@ -72,6 +75,16 @@ public class CoNLLEval {
     while ((line = b.readLine()) != null)
       System.out.println(line);
     b.close();
+  }
+  
+  public List<String> mergeDataForOutput(List<Datum> data, List<String> predictions) {
+    List<String> output = new ArrayList<String>();
+    for (int i=0; i < data.size(); i++) {
+      Datum d = data.get(i);
+      String predLabel = predictions.get(i);
+      output.add(d.word + "\t" + d.label + "\t" + predLabel);
+    }
+    return output;
   }
 
 }

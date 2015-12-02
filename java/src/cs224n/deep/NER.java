@@ -31,6 +31,8 @@ public class NER {
     WindowModel model = new WindowModel(conf);
       
     model.train(trainData);
-    model.test(testData, conf.getOutputFile());
+    
+    List<String> predictions = model.test(testData);
+    FileIO.outputScoringToFile(testData, predictions, conf.getOutputFile());
   }
 }
