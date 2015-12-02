@@ -168,10 +168,11 @@ public class NeuralNetwork {
   	for (int i = 0; i < hiddenLayerSize + 2; i++) {
   		// input layer
   		if (i == 0) {
-  			double[][] allOnes = new double [inputDim][1];
-  			for (double[] row : allOnes)
-  				Arrays.fill(row, 1.0);
-  			weightedInput[i] = new SimpleMatrix(allOnes); 
+//  			double[][] allOnes = new double [inputDim][1];
+//  			for (double[] row : allOnes)
+//  				Arrays.fill(row, 1.0);
+//  			weightedInput[i] = new SimpleMatrix(allOnes); 
+  			weightedInput[i] = X.transpose();
   			activation[i] = X.transpose();
   		} 
   		// output layer
@@ -190,8 +191,23 @@ public class NeuralNetwork {
   }
   
   
-  public SimpleMatrix crossEntropyPrime(SimpleMatrix outputActivation, SimpleMatrix Y) {
-  	return outputActivation.minus(Y);
+  public double crossEntropyCost(SimpleMatrix X, SimpleMatrix Y) {
+  	double[] probs = score(X);
+  	double error = 0.0;
+  	for (int i = 0; i < outputDim; i++) {
+  		double y_i = Y.get(i);
+  		double p_i = probs[i];
+  		error -= y_i * Math.log(p_i) + (1 - y_i) * Math.log(1 - p_i);
+  	}
+  	// regularization
+  	// W
+  	for (int i = 0; i < W.size(); i++) {
+  		error += lambda / 2 * W.get(i).elementMult(W.get(i)).elementSum();
+  	}
+ 	// U
+  	error += lambda / 2 * U.elementMult(U).elementSum();
+  	
+  	return error;
   }
   
   /**
@@ -247,19 +263,19 @@ public class NeuralNetwork {
     
     // input layer;
     SimpleMatrix delta_0 = W.get(1).transpose().mult(delta);
-    nabla_b[0] = delta_0;
+    nabla_b[0] = delta_0;  
     nabla_w[0] = delta_0;
     return new PairOfSimpleMatrixArray(nabla_w, nabla_b);
   }
   
   // TODO: need a method to update gradient
-  public SimpleMatrix updateGradient(SimpleMatrix X, PairOfSimpleMatrixArray nabla, int trainingDataSize) {
+  public SimpleMatrix updateGradient(SimpleMatrix X, PairOfSimpleMatrixArray nabla) {
   	SimpleMatrix[] nabla_w = nabla.getFirstSimpleMatrixArray();
   	SimpleMatrix[] nabla_b = nabla.getSecondSimpleMatrixArray();
   	int hiddenLayerSize = hiddenDims.length;
   	
   	// update output layer U, b2
-  	double coef = alpha * (lambda / trainingDataSize);
+  	double coef = alpha * (lambda );
   	U = U.scale(1 - coef).minus(nabla_w[hiddenLayerSize+1].scale(alpha));
   	b2 = b2.minus(nabla_b[hiddenLayerSize+1].scale(alpha));
   	
@@ -274,6 +290,68 @@ public class NeuralNetwork {
   	return X_transpose.transpose();
   }
 
+  public SimpleMatrix[] empiricalNabla(SimpleMatrix X, SimpleMatrix Y) {
+  	double EPSILON = 1e-4;
+  	int hiddenLayerSize = hiddenDims.length;
+  	SimpleMatrix[] nabla_w = new SimpleMatrix[hiddenLayerSize + 2];
+	
+  	for (int i = 0; i < hiddenLayerSize+2; i++) {
+    	SimpleMatrix temp = null;
+    	
+  		if (i == 0) {
+  			nabla_w[i] = new SimpleMatrix(inputDim, 1);
+  			for (int nr = 0; nr < inputDim; nr++) {
+  				SimpleMatrix increment = new SimpleMatrix(inputDim, 1);
+  				increment.set(nr, 0, EPSILON);
+  				SimpleMatrix X_plus = X.transpose().plus(increment);
+  				SimpleMatrix X_minus = X.transpose().minus(increment);
+  				double error_plus = crossEntropyCost(X_plus.transpose(), Y);
+  				double error_minus = crossEntropyCost(X_minus.transpose(), Y);
+  				nabla_w[i].set(nr, 0, (error_plus - error_minus) / 2 / EPSILON);
+  			}
+  			continue;
+  		}
+  		else if ( i == hiddenLayerSize + 1) {
+  			temp = U;
+  		}
+  		else {
+  			temp = W.get(i);
+  		}
+  		
+  		nabla_w[i] = new SimpleMatrix(temp.numRows(), temp.numCols());
+  	
+  		// loop through element in nabla_w
+  		for (int nr = 0; nr < temp.numRows(); nr++) {
+  			for (int nc = 0; nc < temp.numCols(); nc++) {
+  				double base = temp.get(nr, nc);
+  				temp.set(nr, nc, base + EPSILON);
+  				double error_plus = crossEntropyCost(X, Y);
+  				temp.set(nr, nc, base - EPSILON);
+  				double error_minus = crossEntropyCost(X, Y);
+  				// reset
+  				temp.set(nr, nc, base);
+  				nabla_w[i].set(nr, nc, (error_plus - error_minus) / (2 * EPSILON));
+  			}
+  		}
+  	}
+		return nabla_w;	
+  }
+  
+  public void checkGradient(SimpleMatrix[] nabla, SimpleMatrix[] empNabla) {
+  	boolean flag = true;
+  	for (int i = 1; i < nabla.length; i++) {
+  		System.out.println("nabla: " + nabla[i]);
+  		System.out.println("empNabla: " + empNabla[i]);
+  		double diff = nabla[i].minus(empNabla[i]).elementMaxAbs();
+  		if (diff >= 1e-8) {
+  			System.err.println("Gradient check failed!");
+  			System.err.println(diff);
+  			flag = false;
+  		}
+  	}
+  	
+  	if (flag) System.err.println("Gradient check passed!");
+  }
   /**
    * Run one iteration of Backpropagation based on input X and correct output Y
    * @param X - Input 
