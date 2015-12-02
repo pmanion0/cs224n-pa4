@@ -10,6 +10,7 @@ import cs224n.deep.FakeNeuralNetwork;
 import cs224n.deep.NeuralNetwork;
 import cs224n.document.Document;
 import cs224n.document.DocumentSet;
+import cs224n.util.CoNLLEval;
 import cs224n.util.Configuration;
 import cs224n.util.FileIO;
 import cs224n.util.PairOfSimpleMatrixArray;
@@ -43,6 +44,8 @@ public class WindowModel implements Model {
     int iterCount = 0;
     int maxIters = conf.getMaxIterations();
     int trainingObs = trainData.size();  // TODO: Is this actually the right value?
+    int trainEvalFreq = conf.getTrainEvalFreq();
+    CoNLLEval tester = new CoNLLEval(conf.getConllevalPath());
     
     Iterator<Document> iter = docs.iterator();
     while (iterCount < maxIters) {
@@ -52,6 +55,12 @@ public class WindowModel implements Model {
       WordWindow window = new WordWindow(d, conf.getWindowSize(), wordMap);
       trainDocument(window, trainingObs); // Yuck!
       iterCount++;
+      // Evaluate the model at the requested frequency during training
+      if (trainEvalFreq > 0 && (iterCount % trainEvalFreq) == 0) {
+        List<String> curPredictions = this.test(trainData);
+        List<String> scoredOutput = tester.mergeDataForOutput(trainData, curPredictions);
+        tester.eval(scoredOutput);
+      }
     }
   }
   
