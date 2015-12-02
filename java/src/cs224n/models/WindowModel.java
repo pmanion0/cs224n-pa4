@@ -10,7 +10,7 @@ import cs224n.deep.FakeNeuralNetwork;
 import cs224n.deep.NeuralNetwork;
 import cs224n.document.Document;
 import cs224n.document.DocumentSet;
-import cs224n.junk.GradientCheck;
+import cs224n.gradcheck.GradientCheck;
 import cs224n.util.CoNLLEval;
 import cs224n.util.Configuration;
 import cs224n.util.FileIO;

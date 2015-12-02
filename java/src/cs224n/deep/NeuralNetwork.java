@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Random;
 import org.ejml.simple.SimpleMatrix;
 
-import cs224n.junk.ObjectiveFunction;
+import cs224n.gradcheck.ObjectiveFunction;
 import cs224n.util.Configuration;
 import cs224n.util.FileIO;
 import cs224n.util.Nabla;

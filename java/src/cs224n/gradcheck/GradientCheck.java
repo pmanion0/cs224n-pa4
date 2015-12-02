@@ -1,4 +1,4 @@
-package cs224n.junk;
+package cs224n.gradcheck;
 
 import java.util.List;
 import org.ejml.simple.SimpleMatrix;
