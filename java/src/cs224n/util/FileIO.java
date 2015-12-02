@@ -22,7 +22,7 @@ public class FileIO {
    * @param predictions - Predicted entities corresponding to every datum in data
    * @param outfile - Output file that will be written to
    */
-  public static void outputScoringToFile(List<Datum> data, List<String> predictions, String outfile) {
+  public static void outputScoringToFile(List<String> predictions, String outfile) {
     PrintWriter out;
     try {
       out =  new PrintWriter(new BufferedWriter(new FileWriter(outfile)));
@@ -31,11 +31,9 @@ public class FileIO {
       return;
     }
     
-    for (int i=0; i < data.size(); i++) {
-      Datum d = data.get(i);
-      String predLabel = predictions.get(i);
-      out.println(d.word + "\t" + d.label + "\t" + predLabel);
-    }
+    for (String pred : predictions)
+      out.println(pred);
+    
     out.close();
   }
   

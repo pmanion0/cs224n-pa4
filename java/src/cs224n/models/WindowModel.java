@@ -61,9 +61,8 @@ public class WindowModel implements Model {
       // Evaluate the model at the requested frequency during training
       if (trainEvalFreq > 0 && (iterCount % trainEvalFreq) == 0) {
         System.out.println("  [Test Performance at Iteration " + iterCount + "]");
-        List<String> curPredictions = this.test(trainData);
-        List<String> scoredOutput = tester.mergeDataForOutput(trainData, curPredictions);
-        tester.eval(scoredOutput);
+        List<String> predictions = this.test(trainData);
+        tester.eval(predictions);
       }
     }
   }
@@ -94,18 +93,22 @@ public class WindowModel implements Model {
   }
   
    
-  
   public List<String> test(List<Datum> testData) {
     List<String> predictions = new ArrayList<String>();
-    WordWindow window = new WordWindow(testData, conf.getWindowSize(), wordMap);
+    DocumentSet docs = new DocumentSet(testData);
     
-    do {
-      int[] windowIDs = window.getIDArray();
-      SimpleMatrix X = idsToWordVector(windowIDs);
-      int pred = model.getBestOutputClass(X);
-      String predStr = wordMap.getTargetName(pred);
-      predictions.add(predStr);
-    } while (window.rollWindow());
+    for (Document d : docs) {
+      WordWindow window = new WordWindow(d, conf.getWindowSize(), wordMap);
+      
+      do {
+        int[] windowIDs = window.getIDArray();
+        SimpleMatrix X = idsToWordVector(windowIDs);
+        int pred = model.getBestOutputClass(X);
+        String predStr = wordMap.getTargetName(pred);
+        // Output the scored string:  `word`  `gold_label`  `pred_label`
+        predictions.add(window.getTargetWord() + "\t" + window.getTargetLabel() + "\t" + predStr);
+      } while (window.rollWindow());
+    }
     
     return predictions;
   }

@@ -33,6 +33,6 @@ public class NER {
     model.train(trainData);
     
     List<String> predictions = model.test(testData);
-    FileIO.outputScoringToFile(testData, predictions, conf.getOutputFile());
+    FileIO.outputScoringToFile(predictions, conf.getOutputFile());
   }
 }

@@ -34,8 +34,7 @@ public class Launcher {
     model.train(trainData);
     
     List<String> predictions = model.test(testData);
-    
-    FileIO.outputScoringToFile(testData, predictions, conf.getOutputFile());
+    FileIO.outputScoringToFile(predictions, conf.getOutputFile());
     
     // Run the CoNLL Evaluator on the output and print to console
     CoNLLEval tester = new CoNLLEval(conf.getConllevalPath());
