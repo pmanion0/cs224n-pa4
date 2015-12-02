@@ -6,13 +6,15 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import org.ejml.simple.SimpleMatrix;
+
+import cs224n.junk.ObjectiveFunction;
 import cs224n.util.Configuration;
 import cs224n.util.FileIO;
 import cs224n.util.Nabla;
 import cs224n.util.PairOfSimpleMatrixArray;
 import cs224n.util.WeightedInputAndActivation;
 
-public class NeuralNetwork {
+public class NeuralNetwork implements ObjectiveFunction {
   
   private final int inputDim, outputDim;
   private final int[] hiddenDims;
@@ -352,23 +354,7 @@ public class NeuralNetwork {
   	
   	if (flag) System.err.println("Gradient check passed!");
   }
-  /**
-   * Run one iteration of Backpropagation based on input X and correct output Y
-   * @param X - Input 
-   * @param Y - Correct output labels for the input example X
-   * @return the initial error rate on the example
-   */
-  public double runBackprop(SimpleMatrix X, SimpleMatrix Y) {
-    epochCount++;
-    return 0.0;
-  }
-  
-  public double runBackprop(List<SimpleMatrix> Xs, List<SimpleMatrix> Ys) {
-    // We could implement another one based on a bit list of examples too if needed
-    epochCount++;
-    return 0.0;
-  }
-  
+ 
   
   /**
    * Return the index of the best output class for an input example X
@@ -385,6 +371,11 @@ public class NeuralNetwork {
       }
     }
     return bestOutputClass;
+  }
+  
+  public double valueAt(SimpleMatrix a, SimpleMatrix b) { 
+    // TODO: Implement the valueAt functino for Gradient Checking
+    return 0.0;
   }
 
 }
