@@ -161,34 +161,25 @@ public class NeuralNetwork implements ObjectiveFunction {
 
   public PairOfSimpleMatrixArray getWeightedInputAndActivation(SimpleMatrix X) {
   	int hiddenLayerSize = hiddenDims.length;
-  	// a^l
-  	SimpleMatrix [] activation = new SimpleMatrix[hiddenLayerSize + 2];
-  	// z^l
-  	SimpleMatrix [] weightedInput = new SimpleMatrix[hiddenLayerSize + 2];
   	
-  	// forward feed
+  	SimpleMatrix [] activation = new SimpleMatrix[hiddenLayerSize + 2]; // a^l
+  	SimpleMatrix [] weightedInput = new SimpleMatrix[hiddenLayerSize + 2]; // z^l
+  	
   	for (int i = 0; i < hiddenLayerSize + 2; i++) {
-  		// input layer
   		if (i == 0) {
-//  			double[][] allOnes = new double [inputDim][1];
-//  			for (double[] row : allOnes)
-//  				Arrays.fill(row, 1.0);
-//  			weightedInput[i] = new SimpleMatrix(allOnes); 
+  		  // Input Layer
   			weightedInput[i] = X.transpose();
   			activation[i] = X.transpose();
-  		} 
-  		// output layer
-  		else if (i == hiddenLayerSize + 1) {
+  		} else if (i == hiddenLayerSize + 1) {
+  		  // Output Layer
   			weightedInput[i] = U.mult(activation[i-1]).plus(b2);
   			activation[i] = softmax(weightedInput[i]);
-  		}
-  		// hidden layers
-  		else {
+  		} else {
+  		  // Hidden Layer
   			weightedInput[i] = W.get(i).mult(activation[i-1]).plus(b1.get(i));
   			activation[i] = tanh(weightedInput[i]);
   		}
-  	} // end for
-  	
+  	}
   	return new PairOfSimpleMatrixArray(weightedInput, activation);
   }
   
