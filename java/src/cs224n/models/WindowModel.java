@@ -42,9 +42,9 @@ public class WindowModel implements Model {
   public void train(List<Datum> trainData) {
     DocumentSet docs = new DocumentSet(trainData);
     int iterCount = 0;
-    int maxIters = conf.getMaxIterations();
     int trainingObs = trainData.size();  // TODO: Is this actually the right value?
     int trainEvalFreq = conf.getTrainEvalFreq();
+    int maxIters = conf.getMaxIterations() * trainingObs;
     CoNLLEval tester = new CoNLLEval(conf.getConllevalPath());
     
     Iterator<Document> iter = docs.iterator();
