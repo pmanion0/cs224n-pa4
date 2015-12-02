@@ -15,9 +15,13 @@ public class DocumentSetTest {
   public void test() {
     String tswift = "-DOCSTART- Say you'll remember me " +
                     "-DOCSTART- Standing in a nice dress " +
-                    "-DOCSTART- Staring at the sunset " +
-                    "-DOCSTART- Babe";
-    DocumentSet docset = new DocumentSet(datumList(tswift));
+                    "-DOCSTART- Staring at the sunset";
+    List<Datum> tswift_datum = datumList(tswift);
+    // Check the blank line delimiter as well
+    tswift_datum.add(new Datum("", ""));
+    tswift_datum.add(new Datum("Babe", ""));
+    
+    DocumentSet docset = new DocumentSet(tswift_datum);
     
     Document[] rightDocs = new Document[4];
     rightDocs[0] = new Document(datumList("Say you'll remember me"));

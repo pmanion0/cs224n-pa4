@@ -9,7 +9,8 @@ import cs224n.deep.Datum;
 public class DocumentSet extends ArrayList<Document> {
 
   private static final long serialVersionUID = 1L;
-  private static final String DOCUMENT_BOUNDARY = "-DOCSTART-";
+  private static final String DOCUMENT_BOUNDARY_1 = "-DOCSTART-";
+  private static final String DOCUMENT_BOUNDARY_2 = "";
   
   public DocumentSet(List<Datum> data) {
     super();
@@ -17,7 +18,7 @@ public class DocumentSet extends ArrayList<Document> {
     List<Datum> wordList = new ArrayList<Datum>();
     
     for(Datum d: data) {
-      if (d.word.equals(DOCUMENT_BOUNDARY)) {
+      if (d.word.equals(DOCUMENT_BOUNDARY_1) || d.word.equals(DOCUMENT_BOUNDARY_2)) {
         if (wordList.size() > 0)
           this.add(new Document(wordList));
         wordList = new ArrayList<Datum>();
