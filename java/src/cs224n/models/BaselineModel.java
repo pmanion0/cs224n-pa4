@@ -33,14 +33,14 @@ public class BaselineModel implements Model {
   }
 
   @Override
-  public void test(List<Datum> testData, String outfile) {
+  public List<String> test(List<Datum> testData) {
     List<String> predictions = new ArrayList<String>();
     
     for (Datum test : testData){
       String predLabel = predictDatum(test);
       predictions.add(predLabel);
     }
-    FileIO.outputScoringToFile(testData, predictions, outfile);
+    return predictions;
   }
   
   

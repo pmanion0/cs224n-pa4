@@ -78,7 +78,7 @@ public class WindowModel implements Model {
   
    
   
-  public void test(List<Datum> testData, String outfile) {
+  public List<String> test(List<Datum> testData) {
     List<String> predictions = new ArrayList<String>();
     WordWindow window = new WordWindow(testData, conf.getWindowSize(), wordMap);
     
@@ -90,7 +90,7 @@ public class WindowModel implements Model {
       predictions.add(predStr);
     } while (window.rollWindow());
     
-    FileIO.outputScoringToFile(testData, predictions, outfile);
+    return predictions;
   }
   
   
