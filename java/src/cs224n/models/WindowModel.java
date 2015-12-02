@@ -60,6 +60,7 @@ public class WindowModel implements Model {
       iterCount++;
       // Evaluate the model at the requested frequency during training
       if (trainEvalFreq > 0 && (iterCount % trainEvalFreq) == 0) {
+        System.out.println("  [Test Performance at Iteration " + iterCount + "]");
         List<String> curPredictions = this.test(trainData);
         List<String> scoredOutput = tester.mergeDataForOutput(trainData, curPredictions);
         tester.eval(scoredOutput);
