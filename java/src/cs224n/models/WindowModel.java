@@ -95,7 +95,8 @@ public class WindowModel implements Model {
         List<SimpleMatrix> weights = model.getWeightList();
         weights.add(X);
         
-        GradientCheck.check(Y, weights, gradients, model);
+        boolean result = GradientCheck.check(Y, weights, gradients, model);
+        System.out.println("Pass Gradient Check? " + result);
       }
       
       // Update the word vectors if option is turned on 
