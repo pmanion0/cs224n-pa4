@@ -58,16 +58,12 @@ public class NeuralNetwork implements ObjectiveFunction {
   public List<SimpleMatrix> initializeW() {
     List<SimpleMatrix> output = new ArrayList<SimpleMatrix>();
     
-    // Initialize First Layer Weights (all 1's)
-    output.add(0, SimpleMatrix.identity(inputDim));
-    output.get(0).reshape(inputDim, 1);
-    
     // Initialize All Hidden Layer Weights (random weights)
     int fanIn = inputDim;
     for (int layer=0; layer < hiddenDims.length; layer++) {
       int fanOut = hiddenDims[layer];
       double epsilon = Math.sqrt(6) / Math.sqrt(fanIn + fanOut);  
-      output.add(layer+1, SimpleMatrix.random(fanOut, fanIn, -epsilon, epsilon, randomGenerator));
+      output.add(layer, SimpleMatrix.random(fanOut, fanIn, -epsilon, epsilon, randomGenerator));
       fanIn = fanOut;
     }
     return output;
@@ -78,13 +74,10 @@ public class NeuralNetwork implements ObjectiveFunction {
   public List<SimpleMatrix> initializeB1() {
     List<SimpleMatrix> output = new ArrayList<SimpleMatrix>();
     
-    // Initialize First Layer Bias Terms (all 0's)
-    output.add(0, new SimpleMatrix(inputDim, 1));
-    
     // Initialize All Hidden Bias Layer Terms (all 0's)
     for (int layer=0; layer < hiddenDims.length; layer++) {
       int layerSize = hiddenDims[layer];
-      output.add(layer+1, new SimpleMatrix(layerSize, 1));
+      output.add(layer, new SimpleMatrix(layerSize, 1));
     }
     return output;
   }
@@ -189,7 +182,7 @@ public class NeuralNetwork implements ObjectiveFunction {
   			activation[i] = softmax(weightedInput[i]);
   		} else {
   		  // Hidden Layer
-  			weightedInput[i] = W.get(i).mult(activation[i-1]).plus(b1.get(i));
+  			weightedInput[i] = W.get(i-1).mult(activation[i-1]).plus(b1.get(i-1));
   			activation[i] = tanh(weightedInput[i]);
   		}
   	}
