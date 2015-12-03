@@ -87,9 +87,9 @@ public class WindowModel implements Model {
         /*// Get List of Gradient Matrices
         SimpleMatrix[] nabla_w = nabla.getFirstSimpleMatrixArray();
         List<SimpleMatrix> gradients = new ArrayList<SimpleMatrix>();
-        for (int i=0; i < nabla_w.length; i++)
+        for (int i=1; i < nabla_w.length; i++)
           gradients.add(nabla_w[i]);
-        gradients.add(X.minus(updatedX.transpose()));
+        gradients.add(nabla_w[0].transpose());
         
         // Get List of Weight Matrices
         List<SimpleMatrix> weights = model.getWeightList();
