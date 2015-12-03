@@ -14,13 +14,14 @@ import cs224n.util.PairOfSimpleMatrixArray;
 
 public class NeuralNetworkTest {
   
-  NeuralNetwork nn;
+  NeuralNetwork nn, nn_lambda0;
 
   @Before
   public void setUp() {
     Configuration conf = new Configuration();
     conf.setTargetEntities("A,B,C"); // Force Output Dimension = 3
     conf.setHiddenDimensions("4");
+    conf.setLambda(0.1);
     
     // Final Output Layer
     double[][] arrU = new double[][]{
@@ -48,6 +49,13 @@ public class NeuralNetworkTest {
     
     // Create the Neural Network with these matrices
     nn = new NeuralNetwork(conf, U, b2, W, b1);
+    
+    // Create a second NN where Lambda = 0 for other tests
+    Configuration conf_lambda0 = new Configuration();
+    conf_lambda0.setTargetEntities("A,B,C");
+    conf_lambda0.setHiddenDimensions("4");
+    conf_lambda0.setLambda(0.0);
+    nn_lambda0 = new NeuralNetwork(conf_lambda0, U, b2, W, b1);
   }
 
   @Test
@@ -146,7 +154,21 @@ public class NeuralNetworkTest {
 
   @Test
   public void testCrossEntropyCost() {
-    fail("Not yet implemented");
+    double[][] arrX = new double[][]{{2, 0, 0.4, 1}};
+    SimpleMatrix X = new SimpleMatrix(arrX);
+    
+    double[][] arrY = new double[][]{{0, 1, 0}};
+    SimpleMatrix Y = new SimpleMatrix(arrY);
+    
+    double cost = nn_lambda0.crossEntropyCost(X, Y);
+    double answerCost = -Math.log(1-0.029554632) - Math.log(0.867061259) - Math.log(1-0.103384109);
+    
+    assertEquals(answerCost, cost, 1e-8);
+    
+    double costLambda = nn.crossEntropyCost(X, Y);
+    double answerCostLambda = answerCost + 0.1 / 2 * (4.367200530 + 3.876709380);
+    
+    assertEquals(answerCostLambda, costLambda, 1e-8);
   }
 
   @Test
