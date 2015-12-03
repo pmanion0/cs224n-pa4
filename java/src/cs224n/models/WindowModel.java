@@ -81,10 +81,10 @@ public class WindowModel implements Model {
       
       // Get the updated X with the gradient
       PairOfSimpleMatrixArray nabla = model.backprop(X, Y);
-      SimpleMatrix updatedX = model.updateGradient(X, nabla).transpose();
+      
       
       if (true) { //gradientCheck) {
-        /*// Get List of Gradient Matrices
+        // Get List of Gradient Matrices
         SimpleMatrix[] nabla_w = nabla.getFirstSimpleMatrixArray();
         List<SimpleMatrix> gradients = new ArrayList<SimpleMatrix>();
         for (int i=1; i < nabla_w.length; i++)
@@ -96,11 +96,12 @@ public class WindowModel implements Model {
         weights.add(X);
         
         boolean result = GradientCheck.check(Y, weights, gradients, model);
-        System.out.println("Pass Gradient Check? " + result);*/
-        SimpleMatrix[] nabla_w = nabla.getFirstSimpleMatrixArray();
+        System.out.println("Pass Gradient Check? " + result);
+        /*SimpleMatrix[] nabla_w = nabla.getFirstSimpleMatrixArray();
         SimpleMatrix[] emp_nabla_w = model.empiricalNabla(X, Y);
-        model.checkGradient(nabla_w, emp_nabla_w);
+        model.checkGradient(nabla_w, emp_nabla_w);*/
       }
+      SimpleMatrix updatedX = model.updateGradient(X, nabla).transpose();
       
       // Update the word vectors if option is turned on 
       if (conf.getLearnWordVec())
