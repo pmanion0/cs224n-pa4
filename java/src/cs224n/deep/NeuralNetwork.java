@@ -281,66 +281,66 @@ public class NeuralNetwork implements ObjectiveFunction {
   }
 
   public SimpleMatrix[] empiricalNabla(SimpleMatrix X, SimpleMatrix Y) {
-  	double EPSILON = 1e-4;
-  	int hiddenLayerSize = hiddenDims.length;
-  	SimpleMatrix[] nabla_w = new SimpleMatrix[hiddenLayerSize + 2];
-	
-  	for (int i = 0; i < hiddenLayerSize+2; i++) {
-    	SimpleMatrix temp = null;
-    	
-  		if (i == 0) {
-  			nabla_w[i] = new SimpleMatrix(inputDim, 1);
-  			for (int nr = 0; nr < inputDim; nr++) {
-  				SimpleMatrix increment = new SimpleMatrix(inputDim, 1);
-  				increment.set(nr, 0, EPSILON);
-  				SimpleMatrix X_plus = X.transpose().plus(increment);
-  				SimpleMatrix X_minus = X.transpose().minus(increment);
-  				double error_plus = crossEntropyCost(X_plus.transpose(), Y);
-  				double error_minus = crossEntropyCost(X_minus.transpose(), Y);
-  				nabla_w[i].set(nr, 0, (error_plus - error_minus) / 2 / EPSILON);
-  			}
-  			continue;
-  		}
-  		else if ( i == hiddenLayerSize + 1) {
-  			temp = U;
-  		}
-  		else {
-  			temp = W.get(i);
-  		}
-  		
-  		nabla_w[i] = new SimpleMatrix(temp.numRows(), temp.numCols());
-  	
-  		// loop through element in nabla_w
-  		for (int nr = 0; nr < temp.numRows(); nr++) {
-  			for (int nc = 0; nc < temp.numCols(); nc++) {
-  				double base = temp.get(nr, nc);
-  				temp.set(nr, nc, base + EPSILON);
-  				double error_plus = crossEntropyCost(X, Y);
-  				temp.set(nr, nc, base - EPSILON);
-  				double error_minus = crossEntropyCost(X, Y);
-  				// reset
-  				temp.set(nr, nc, base);
-  				nabla_w[i].set(nr, nc, (error_plus - error_minus) / (2 * EPSILON));
-  			}
-  		}
-  	}
-		return nabla_w;	
+    double EPSILON = 1e-4;
+    int hiddenLayerSize = hiddenDims.length;
+    SimpleMatrix[] nabla_w = new SimpleMatrix[hiddenLayerSize + 2];
+  
+    for (int i = 0; i < hiddenLayerSize+2; i++) {
+      SimpleMatrix temp = null;
+      
+      if (i == 0) {
+        nabla_w[i] = new SimpleMatrix(inputDim, 1);
+        for (int nr = 0; nr < inputDim; nr++) {
+          SimpleMatrix increment = new SimpleMatrix(inputDim, 1);
+          increment.set(nr, 0, EPSILON);
+          SimpleMatrix X_plus = X.transpose().plus(increment);
+          SimpleMatrix X_minus = X.transpose().minus(increment);
+          double error_plus = crossEntropyCost(X_plus.transpose(), Y);
+          double error_minus = crossEntropyCost(X_minus.transpose(), Y);
+          nabla_w[i].set(nr, 0, (error_plus - error_minus) / 2 / EPSILON);
+        }
+        continue;
+      }
+      else if ( i == hiddenLayerSize + 1) {
+        temp = U;
+      }
+      else {
+        temp = W.get(i-1);
+      }
+      
+      nabla_w[i] = new SimpleMatrix(temp.numRows(), temp.numCols());
+    
+      // loop through element in nabla_w
+      for (int nr = 0; nr < temp.numRows(); nr++) {
+        for (int nc = 0; nc < temp.numCols(); nc++) {
+          double base = temp.get(nr, nc);
+          temp.set(nr, nc, base + EPSILON);
+          double error_plus = crossEntropyCost(X, Y);
+          temp.set(nr, nc, base - EPSILON);
+          double error_minus = crossEntropyCost(X, Y);
+          // reset
+          temp.set(nr, nc, base);
+          nabla_w[i].set(nr, nc, (error_plus - error_minus) / (2 * EPSILON));
+        }
+      }
+    }
+    return nabla_w; 
   }
   
   public void checkGradient(SimpleMatrix[] nabla, SimpleMatrix[] empNabla) {
-  	boolean flag = true;
-  	for (int i = 1; i < nabla.length; i++) {
-  		System.out.println("nabla: " + nabla[i]);
-  		System.out.println("empNabla: " + empNabla[i]);
-  		double diff = nabla[i].minus(empNabla[i]).elementMaxAbs();
-  		if (diff >= 1e-8) {
-  			System.err.println("Gradient check failed!");
-  			System.err.println(diff);
-  			flag = false;
-  		}
-  	}
-  	
-  	if (flag) System.err.println("Gradient check passed!");
+    boolean flag = true;
+    for (int i = 0; i < nabla.length; i++) {
+      //System.out.println("nabla: " + nabla[i]);
+      //System.out.println("empNabla: " + empNabla[i]);
+      double diff = nabla[i].minus(empNabla[i]).elementMaxAbs();
+      if (diff >= 1e-8) {
+        System.err.println("Gradient check failed!");
+        System.err.println(diff);
+        flag = false;
+      }
+    }
+    
+    if (flag) System.err.println("Gradient check passed!");
   }
  
   
