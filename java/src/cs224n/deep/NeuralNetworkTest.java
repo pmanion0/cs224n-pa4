@@ -2,17 +2,52 @@ package cs224n.deep;
 
 import static org.junit.Assert.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.ejml.simple.SimpleMatrix;
+import org.junit.Before;
 import org.junit.Test;
 
 import cs224n.util.Configuration;
+import cs224n.util.PairOfSimpleMatrixArray;
 
 public class NeuralNetworkTest {
+  
+  NeuralNetwork nn;
 
-
-  @Test
-  public void testInitializeMatrices() {
-    fail("Not yet implemented");
+  @Before
+  public void setUp() {
+    Configuration conf = new Configuration();
+    conf.setTargetEntities("A,B,C"); // Force Output Dimension = 3
+    conf.setHiddenDimensions("4");
+    
+    // Final Output Layer
+    double[][] arrU = new double[][]{
+      {0.0786,  0.2659,  0.4643,  0.9167},
+      {0.4063,  0.4590,  0.8579,  0.1534},
+      {0.3202,  0.7000,  0.5802,  0.8243}};
+    double[][] arrb2 = new double[][]{{-0.5}, {2}, {0}};
+    
+    // Hidden Layer
+    double[][] arrW = new double[][]{
+      {0.6084,  0.4024,  0.5827,  0.2394},
+      {0.3723,  0.7816,  0.0588,  0.8247},
+      {0.5970,  0.4722,  0.4992,  0.8065},
+      {0.2073,  0.1346,  0.5692,  0.3756}};
+    double[][] arrb1 = new double[][]{{1}, {0}, {0.5}, {-1}};
+    
+    // Convert these into the SimpleMatrix representations
+    SimpleMatrix U = new SimpleMatrix(arrU);
+    SimpleMatrix b2 = new SimpleMatrix(arrb2);
+    
+    List<SimpleMatrix> W = new ArrayList<SimpleMatrix>();
+    W.add(new SimpleMatrix(arrW));
+    List<SimpleMatrix> b1 = new ArrayList<SimpleMatrix>();
+    b1.add(new SimpleMatrix(arrb1));
+    
+    // Create the Neural Network with these matrices
+    nn = new NeuralNetwork(conf, U, b2, W, b1);
   }
 
   @Test
@@ -80,20 +115,38 @@ public class NeuralNetworkTest {
 
   @Test
   public void testScore() {
-    // This function is fairly straightforward and hard to test
-    //fail("Not yet implemented");
+    double[][] arrX = new double[][]{{2, 0, 0.4, 1}};
+    SimpleMatrix X = new SimpleMatrix(arrX);
+    
+    double[] outputs = nn.score(X);
+    double[] rightOutputs = new double[]{0.029554632, 0.867061259, 0.103384109};
+    
+    doubleArrayEquals(new double[][]{outputs}, new double[][]{rightOutputs}, 1e-8);
   }
 
   @Test
   public void testGetWeightedInputAndActivation() {
-    // This function is fairly straightforward and hard to test
-    //fail("Not yet implemented");
+    double[][] arrX = new double[][]{{2, 0, 0.4, 1}};
+    SimpleMatrix X = new SimpleMatrix(arrX);
+    
+    PairOfSimpleMatrixArray outputs = nn.getWeightedInputAndActivation(X);
+    SimpleMatrix[] weightedInput = outputs.getFirstSimpleMatrixArray();
+    SimpleMatrix[] activations = outputs.getSecondSimpleMatrixArray();
+    
+    double[] answerWeightedHidden = new double[] {2.689280000, 1.592820000, 2.700180000, 0.017880000};
+    double[] answerWeightedOutput = new double[] {0.299175423, 3.678044561, 1.551386192};
+    doubleArrayEquals(new double[][]{answerWeightedHidden}, simpleToDouble(weightedInput[1].transpose()), 1e-8);
+    doubleArrayEquals(new double[][]{answerWeightedOutput}, simpleToDouble(weightedInput[2].transpose()), 1e-8);
+    
+    double[] answerActivationHidden = new double[] {0.990813467, 0.920580589, 0.991010676, 0.017878095};
+    double[] answerActivationOutput = new double[] {0.029554632, 0.867061259, 0.103384109};
+    doubleArrayEquals(new double[][]{answerActivationHidden}, simpleToDouble(activations[1].transpose()), 1e-8);
+    doubleArrayEquals(new double[][]{answerActivationOutput}, simpleToDouble(activations[2].transpose()), 1e-8);
   }
 
   @Test
   public void testCrossEntropyCost() {
-    // This function is fairly straightforward and hard to test
-    //fail("Not yet implemented");
+    fail("Not yet implemented");
   }
 
   @Test
@@ -103,16 +156,6 @@ public class NeuralNetworkTest {
 
   @Test
   public void testUpdateGradient() {
-    fail("Not yet implemented");
-  }
-
-  @Test
-  public void testEmpiricalNabla() {
-    fail("Not yet implemented");
-  }
-
-  @Test
-  public void testCheckGradient() {
     fail("Not yet implemented");
   }
 
@@ -143,6 +186,12 @@ public class NeuralNetworkTest {
     for (int i=0; i < a.length; i++)
       for (int j=0; j < a[i].length; j++)
         assertTrue(Math.abs(a[i][j] - b[i][j]) < tolerance);
+  }
+  
+  public void simpleMatrixEquals(SimpleMatrix a, SimpleMatrix b, double tolerance) {
+    double[][] arrA = simpleToDouble(a);
+    double[][] arrB = simpleToDouble(b);
+    doubleArrayEquals(arrA, arrB, tolerance);
   }
   
   
