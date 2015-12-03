@@ -15,7 +15,64 @@ public class NeuralNetwork implements ObjectiveFunction {
   private final int[] hiddenDims;
   private List<SimpleMatrix> W;  // Input-to-Hidden and Hidden-to-Hidden Weights
   private SimpleMatrix U;        // Final Hidden-to-Output Weights
-  private List<SimpleMatrix> b1; // Bias for Input + All Hidden Layers
+  
+  public List<SimpleMatrix> getW() {
+		return W;
+	}
+
+	public void setW(List<SimpleMatrix> w) {
+		W = w;
+	}
+
+	public SimpleMatrix getU() {
+		return U;
+	}
+
+	public void setU(SimpleMatrix u) {
+		U = u;
+	}
+
+	public List<SimpleMatrix> getB1() {
+		return b1;
+	}
+
+	public void setB1(List<SimpleMatrix> b1) {
+		this.b1 = b1;
+	}
+
+	public SimpleMatrix getB2() {
+		return b2;
+	}
+
+	public void setB2(SimpleMatrix b2) {
+		this.b2 = b2;
+	}
+
+	public double getLambda() {
+		return lambda;
+	}
+
+	public void setLambda(double lambda) {
+		this.lambda = lambda;
+	}
+
+	public double getAlpha() {
+		return alpha;
+	}
+
+	public void setAlpha(double alpha) {
+		this.alpha = alpha;
+	}
+
+	public int getInputDim() {
+		return inputDim;
+	}
+
+	public int[] getHiddenDims() {
+		return hiddenDims;
+	}
+
+	private List<SimpleMatrix> b1; // Bias for Input + All Hidden Layers
   private SimpleMatrix b2;       // Bias for Output Layer
   private double lambda, alpha;
   private Random randomGenerator = new Random();
@@ -199,7 +256,7 @@ public class NeuralNetwork implements ObjectiveFunction {
   	for (int i = 0; i < outputDim; i++) {
   		double y_i = Y.get(i);
   		double p_i = probs[i];
-  		error -= y_i * Math.log(p_i) + (1 - y_i) * Math.log(1 - p_i);
+  		error -= y_i * Math.log(p_i) ;
   	}
   	// Include Regularization Cost -- J_R(theta)
   	for (int i = 0; i < W.size(); i++) {
@@ -249,7 +306,7 @@ public class NeuralNetwork implements ObjectiveFunction {
     		W_l_plus_one = U;
     	}
     	else {
-    		W_l_plus_one = W.get(l+1);
+    		W_l_plus_one = W.get(l);
     	}
     	
     	weightedInput_l = weightedInput[l]; //z^l
@@ -261,7 +318,7 @@ public class NeuralNetwork implements ObjectiveFunction {
     }
     
     // input layer;
-    SimpleMatrix delta_0 = W.get(1).transpose().mult(delta);
+    SimpleMatrix delta_0 = W.get(0).transpose().mult(delta);
     nabla_b[0] = delta_0;  
     nabla_w[0] = delta_0;
     return new PairOfSimpleMatrixArray(nabla_w, nabla_b);
@@ -280,8 +337,8 @@ public class NeuralNetwork implements ObjectiveFunction {
   	
   	// update hidden layer W and b1
   	for (int l = 1; l <= hiddenLayerSize; l++) {
-  		W.set(l, W.get(l).scale(1 - coef).minus(nabla_w[l].scale(alpha)));
-  		b1.set(l, b1.get(l).minus(nabla_b[l].scale(alpha)));
+  		W.set(l-1, W.get(l-1).scale(1 - coef).minus(nabla_w[l].scale(alpha)));
+  		b1.set(l-1, b1.get(l-1).minus(nabla_b[l].scale(alpha)));
   	}
   	
   	// update X
@@ -314,7 +371,7 @@ public class NeuralNetwork implements ObjectiveFunction {
   			temp = U;
   		}
   		else {
-  			temp = W.get(i);
+  			temp = W.get(i-1);
   		}
   		
   		nabla_w[i] = new SimpleMatrix(temp.numRows(), temp.numCols());
@@ -338,9 +395,9 @@ public class NeuralNetwork implements ObjectiveFunction {
   
   public void checkGradient(SimpleMatrix[] nabla, SimpleMatrix[] empNabla) {
   	boolean flag = true;
-  	for (int i = 1; i < nabla.length; i++) {
-  		System.out.println("nabla: " + nabla[i]);
-  		System.out.println("empNabla: " + empNabla[i]);
+  	for (int i = 0; i < nabla.length; i++) {
+  		//System.out.println("nabla: " + nabla[i]);
+  		//System.out.println("empNabla: " + empNabla[i]);
   		double diff = nabla[i].minus(empNabla[i]).elementMaxAbs();
   		if (diff >= 1e-8) {
   			System.err.println("Gradient check failed!");

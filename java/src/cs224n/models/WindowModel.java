@@ -81,24 +81,27 @@ public class WindowModel implements Model {
       
       // Get the updated X with the gradient
       PairOfSimpleMatrixArray nabla = model.backprop(X, Y);
+      SimpleMatrix[] nabla_w = nabla.getFirstSimpleMatrixArray();
+      SimpleMatrix[] emp_nabla_w = model.empiricalNabla(X, Y);
+      model.checkGradient(nabla_w, emp_nabla_w);
       SimpleMatrix updatedX = model.updateGradient(X, nabla).transpose();
       
-      if (true) { //gradientCheck) {
-        // Get List of Gradient Matrices
-        SimpleMatrix[] nabla_w = nabla.getFirstSimpleMatrixArray();
-        List<SimpleMatrix> gradients = new ArrayList<SimpleMatrix>();
-        for (SimpleMatrix m : nabla_w)
-          gradients.add(m);
-        gradients.add(X.minus(updatedX.transpose()));
-        
-        // Get List of Weight Matrices
-        List<SimpleMatrix> weights = model.getWeightList();
-        weights.add(X);
-        
-        boolean result = GradientCheck.check(Y, weights, gradients, model);
-        System.out.println("Pass Gradient Check? " + result);
-      }
-      
+//      if (true) { //gradientCheck) {
+//        // Get List of Gradient Matrices
+//        SimpleMatrix[] nabla_w = nabla.getFirstSimpleMatrixArray();
+//        List<SimpleMatrix> gradients = new ArrayList<SimpleMatrix>();
+//        for (SimpleMatrix m : nabla_w)
+//          gradients.add(m);
+//        gradients.add(X.minus(updatedX.transpose()));
+//        
+//        // Get List of Weight Matrices
+//        List<SimpleMatrix> weights = model.getWeightList();
+//        weights.add(X);
+//        
+//        boolean result = GradientCheck.check(Y, weights, gradients, model);
+//        System.out.println("Pass Gradient Check? " + result);
+//      }
+//      
       // Update the word vectors if option is turned on 
       if (conf.getLearnWordVec())
         updateWordVector(windowIDs, updatedX);

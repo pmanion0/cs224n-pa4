@@ -14,7 +14,7 @@ import cs224n.util.PairOfSimpleMatrixArray;
 
 public class NeuralNetworkTest {
   
-  NeuralNetwork nn, nn_lambda0;
+  NeuralNetwork nn, nn_lambda0, nn_lambda0_alpha01;
 
   @Before
   public void setUp() {
@@ -56,6 +56,14 @@ public class NeuralNetworkTest {
     conf_lambda0.setHiddenDimensions("4");
     conf_lambda0.setLambda(0.0);
     nn_lambda0 = new NeuralNetwork(conf_lambda0, U, b2, W, b1);
+  
+   // Create a third NN where lambda = 0 and alpha = 0.1 for testing updateX
+    Configuration conf_lambda0_alpha01 = new Configuration();
+    conf_lambda0_alpha01.setTargetEntities("A,B,C");
+    conf_lambda0_alpha01.setHiddenDimensions("4");
+    conf_lambda0_alpha01.setLambda(0.0);
+    conf_lambda0_alpha01.setLearningRate(0.1);
+    nn_lambda0_alpha01 = new NeuralNetwork(conf_lambda0_alpha01, U, b2, W, b1);
   }
 
   @Test
@@ -178,7 +186,69 @@ public class NeuralNetworkTest {
 
   @Test
   public void testUpdateGradient() {
-    fail("Not yet implemented");
+    double[][] arrX = new double[][]{{2, 0, 0.4, 1}};
+    SimpleMatrix X = new SimpleMatrix(arrX);
+    
+    double[][] nabla_U = new double[][] {
+    		{0,	-0.005,	-0.007,	-0.007},
+    		{-0.006,	-0.073,	-0.092,	-0.095},
+    		{-0.001,	-0.01,	-0.013,	-0.014}
+    };
+    SimpleMatrix sn_U = new SimpleMatrix(nabla_U);
+    
+    double[][] nabla_W = new double[][] {
+    		{0,	0,	-0.001,	-0.001},
+    		{-0.007,	-0.089,	-0.112,	-0.115},
+    		{-0.001,	-0.013,	-0.017,	-0.017},
+    		{-0.009,	-0.113,	-0.142,	-0.146}
+    };
+    SimpleMatrix sn_W = new SimpleMatrix(nabla_W);
+    
+    double[][] nabla_b2 = new double[][] {{0.137}, {-0.013}, {0.114}};
+    double[][] nabla_b1 = new double[][] {{-0.141}, {-0.027}, {-0.035}, {0.108}};
+    double[][] nabla_b0 = new double[][] {{0.01}, {0.02}, {0}, {0.03}};
+    SimpleMatrix sn_b2 = new SimpleMatrix(nabla_b2);
+    SimpleMatrix sn_b1 = new SimpleMatrix(nabla_b1);
+    SimpleMatrix sn_b0 = new SimpleMatrix(nabla_b0);
+    
+    SimpleMatrix[] nabla_w = new SimpleMatrix[] {sn_b0, sn_W, sn_U};
+    SimpleMatrix[] nabla_b = new SimpleMatrix[] {sn_b0, sn_b1, sn_b2};
+    
+    PairOfSimpleMatrixArray nablaInput = new PairOfSimpleMatrixArray(nabla_w, nabla_b);
+    
+    double[][] updated_U = new double[][] {
+    		{0.0786,	0.2664,	0.465,	0.9174},
+    		{0.4069,	0.4663,	0.8671,	0.1629},
+    		{0.3203,	0.701,	0.5815,	0.8257}
+    };
+    double[][] updated_W = new double[][] {
+    		{0.6084,	0.4024,	0.5828,	0.2395},
+    		{0.373,	0.7905,	0.07,	0.8362},
+    		{0.5971,	0.4735,	0.5009,	0.8082},
+    		{0.2082,	0.1459,	0.5834,	0.3902}
+    };
+    double[][] updated_b2 = new double[][] {{-0.5137}, {2.0013}, {-0.0114}};
+    double[][] updated_b1 = new double[][] {{1.0141}, {0.0027}, {0.5035}, {-1.0108}};
+    double[][] updated_X = new double[][] {{1.999, -0.002, 0.4, 0.997}};
+    SimpleMatrix answerU = new SimpleMatrix(updated_U);
+    SimpleMatrix answerW = new SimpleMatrix(updated_W);
+    SimpleMatrix answerB2 = new SimpleMatrix(updated_b2);
+    SimpleMatrix answerB1 = new SimpleMatrix(updated_b1);
+    SimpleMatrix answerX = new SimpleMatrix(updated_X);
+    
+    SimpleMatrix outputX = nn_lambda0_alpha01.updateGradient(X, nablaInput);
+   
+    SimpleMatrix outputW = nn_lambda0_alpha01.getW().get(0);
+    SimpleMatrix outputU = nn_lambda0_alpha01.getU();
+    SimpleMatrix outputB2 = nn_lambda0_alpha01.getB2();
+    SimpleMatrix outputB1 = nn_lambda0_alpha01.getB1().get(0);
+    
+
+    simpleMatrixEquals(answerX, outputX, 1e-8);
+    simpleMatrixEquals(answerB1, outputB1, 1e-8);
+    simpleMatrixEquals(answerB2, outputB2, 1e-8);
+    simpleMatrixEquals(answerU, outputU, 1e-8);
+    simpleMatrixEquals(answerW, outputW, 1e-8);
   }
 
   @Test
