@@ -218,52 +218,43 @@ public class NeuralNetwork implements ObjectiveFunction {
    */
   public PairOfSimpleMatrixArray backprop(SimpleMatrix X, SimpleMatrix Y) {
     int hiddenLayerSize = hiddenDims.length;
-    // \partial J / \partial b
-    SimpleMatrix[] nabla_b = new SimpleMatrix[hiddenLayerSize+2];
-    // \partial J / \partial W (including U)
-    SimpleMatrix[] nabla_w = new SimpleMatrix[hiddenLayerSize+2]; 
-    SimpleMatrix delta;
+    SimpleMatrix[] nabla_b = new SimpleMatrix[hiddenLayerSize+2]; // Bias Gradient (b1 and b2)
+    SimpleMatrix[] nabla_w = new SimpleMatrix[hiddenLayerSize+2]; // Weight Gradients (W and U)
     
-    PairOfSimpleMatrixArray weightedInputAndActivation;
-    weightedInputAndActivation = getWeightedInputAndActivation(X);
+    // Find the WeightedInputs and Activations
+    PairOfSimpleMatrixArray weightedInputAndActivation = getWeightedInputAndActivation(X);
     SimpleMatrix[] weightedInput = weightedInputAndActivation.getFirstSimpleMatrixArray();
     SimpleMatrix[] activation = weightedInputAndActivation.getSecondSimpleMatrixArray();
     
+    // Output Layer Gradients
+    SimpleMatrix predictions = activation[hiddenLayerSize+1];
+    SimpleMatrix deltaCurrent = predictions.minus(Y.transpose());
+    SimpleMatrix activationBelow = activation[hiddenLayerSize];
+
+    nabla_b[hiddenLayerSize+1] = deltaCurrent;
+    nabla_w[hiddenLayerSize+1] = deltaCurrent.mult(activationBelow.transpose());
     
-    // output layer: delta_L 
-    delta = activation[hiddenLayerSize+1].minus(Y.transpose()); // 5 by 1
-    nabla_b[hiddenLayerSize+1] = delta;
-    //System.out.println("delta: " + delta);
-    //System.out.println("activation[hiddenLayerSize]: " + activation[hiddenLayerSize]);
-    nabla_w[hiddenLayerSize+1] = delta.mult(activation[hiddenLayerSize].transpose());
+    // Hidden Layer Gradients:
+    SimpleMatrix weightToLayerAbove;
+    SimpleMatrix weightedInputCurrent; //z^l
     
-    // hidden layer, backprop
-    SimpleMatrix W_l_plus_one;
-    SimpleMatrix weightedInput_l; //z^l
-    SimpleMatrix activation_l_minus_one;
-    SimpleMatrix delta_l;    
     
     for (int l = hiddenLayerSize; l>=1; l--) {
-    	  	
-    	if (l == hiddenLayerSize) {
-    		W_l_plus_one = U;
-    	}
-    	else {
-    		W_l_plus_one = W.get(l+1);
-    	}
+      weightToLayerAbove = (l==hiddenLayerSize) ? U : W.get(l);
     	
-    	weightedInput_l = weightedInput[l]; //z^l
-    	activation_l_minus_one = activation[l-1]; //a^{l-1}
-    	delta_l = W_l_plus_one.transpose().mult(delta).elementMult(tanhPrime(weightedInput_l));
-    	nabla_b[l] = delta_l;
-    	nabla_w[l] = delta_l.mult(activation_l_minus_one.transpose());
-    	delta = delta_l;   	
+      weightedInputCurrent = weightedInput[l]; //z^l
+    	activationBelow = activation[l-1]; //a^{l-1}
+    	deltaCurrent = (weightToLayerAbove.transpose().mult(deltaCurrent)).elementMult(tanhPrime(weightedInputCurrent));
+    	nabla_b[l] = deltaCurrent;
+    	nabla_w[l] = deltaCurrent.mult(activationBelow.transpose());
     }
     
-    // input layer;
-    SimpleMatrix delta_0 = W.get(1).transpose().mult(delta);
-    nabla_b[0] = delta_0;  
-    nabla_w[0] = delta_0;
+    // Input Layer Gradient
+    weightToLayerAbove = W.get(0);
+    deltaCurrent = weightToLayerAbove.transpose().mult(deltaCurrent);
+    nabla_b[0] = deltaCurrent;
+    nabla_w[0] = deltaCurrent;
+    
     return new PairOfSimpleMatrixArray(nabla_w, nabla_b);
   }
   
