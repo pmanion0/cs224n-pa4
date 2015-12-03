@@ -1,32 +1,22 @@
 package cs224n.deep;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import org.ejml.simple.SimpleMatrix;
 
 import cs224n.gradcheck.ObjectiveFunction;
 import cs224n.util.Configuration;
-import cs224n.util.FileIO;
-import cs224n.util.Nabla;
 import cs224n.util.PairOfSimpleMatrixArray;
-import cs224n.util.WeightedInputAndActivation;
 
 public class NeuralNetwork implements ObjectiveFunction {
   
   private final int inputDim, outputDim;
   private final int[] hiddenDims;
-  private int epochCount = 0;
-  // weight matrix for non-final layer
-  private List<SimpleMatrix> W;
-  // weight matrix for final layer
-  private SimpleMatrix U;
-  // bias for non-final layer
-  private List<SimpleMatrix> b1;
-  // bias for final layer
-  private SimpleMatrix b2;
+  private List<SimpleMatrix> W;  // Input-to-Hidden and Hidden-to-Hidden Weights
+  private SimpleMatrix U;        // Final Hidden-to-Output Weights
+  private List<SimpleMatrix> b1; // Bias for Input + All Hidden Layers
+  private SimpleMatrix b2;       // Bias for Output Layer
   private double lambda, alpha;
   private Random randomGenerator = new Random();
 
@@ -36,6 +26,8 @@ public class NeuralNetwork implements ObjectiveFunction {
     this(conf, null, null, null, null);
   }
   
+  /** Create a Neural Network using the user defined matrices
+   *  NOTE: You must ensure the Configuration matches the matrix dimensions  */
   public NeuralNetwork(Configuration conf, SimpleMatrix U, SimpleMatrix b2,
       List<SimpleMatrix> W, List<SimpleMatrix> b1) {
     this.inputDim = conf.getWindowSize() * conf.getWordVecDim();
@@ -44,6 +36,7 @@ public class NeuralNetwork implements ObjectiveFunction {
     this.lambda = conf.getLambda();
     this.alpha = conf.getLearningRate();
 
+    // Initialize any matrices not provided by the user
     this.U  = (U==null  ? initializeU()  : U);
     this.W  = (W==null  ? initializeW()  : W);
     this.b1 = (b1==null ? initializeB1() : b1);
@@ -51,7 +44,8 @@ public class NeuralNetwork implements ObjectiveFunction {
   }
   
   
-  /** Initialize the final hidden-to-output layer weights U */
+  /** Initialize the final hidden-to-output layer weights U
+   *  - Requires hiddenDims and outputDim to be defined  */
   public SimpleMatrix initializeU() {
     int lastHiddenDim = hiddenDims[hiddenDims.length - 1];
     double epsilonLast = Math.sqrt(6) / Math.sqrt(outputDim + lastHiddenDim);
@@ -59,7 +53,8 @@ public class NeuralNetwork implements ObjectiveFunction {
     return output;
   }
   
-  /** Initialize the input-to-hidden and hidden-to-hidden layer weights W */
+  /** Initialize the input-to-hidden and hidden-to-hidden layer weights W
+   *  - Requires inputDim and hiddenDims to be defined  */
   public List<SimpleMatrix> initializeW() {
     List<SimpleMatrix> output = new ArrayList<SimpleMatrix>();
     
@@ -78,7 +73,8 @@ public class NeuralNetwork implements ObjectiveFunction {
     return output;
   }
   
-  /** Initialize the bias terms for all hidden layers b1 */
+  /** Initialize the bias terms for all hidden layers b1
+   *  - Requires inputDim and hiddenDims to be defined  */
   public List<SimpleMatrix> initializeB1() {
     List<SimpleMatrix> output = new ArrayList<SimpleMatrix>();
     
@@ -93,7 +89,8 @@ public class NeuralNetwork implements ObjectiveFunction {
     return output;
   }
   
-  /** Initialize the final layer bias terms b2 */
+  /** Initialize the final layer bias terms b2 
+   *  - Requires outputDim to be defined  */
   public SimpleMatrix initializeB2() {
     return new SimpleMatrix(outputDim,1);
   }
@@ -161,8 +158,7 @@ public class NeuralNetwork implements ObjectiveFunction {
    * @param X - input array of dimension {Window Size} x {Word Vector Dimension}
    * @return array of scores for each possible output class
    */
-  // feed forward 
-  public double[] score(SimpleMatrix X) {
+  public double[] score(SimpleMatrix X) { // Feed Forward + Return Output Layer Probabilities
   	
   	PairOfSimpleMatrixArray weightedInputAndActivation = getWeightedInputAndActivation(X);
   	SimpleMatrix probsMatrix = weightedInputAndActivation.getSecondSimpleMatrixArray()[hiddenDims.length + 1];
@@ -172,7 +168,6 @@ public class NeuralNetwork implements ObjectiveFunction {
   	for ( int i = 0; i < outputDim; i++) {
   		probs[i] = probsMatrix.get(i, 0);
   	}
-  	
   	return probs;
   }
   
@@ -229,7 +224,6 @@ public class NeuralNetwork implements ObjectiveFunction {
    * @return layer-by-layer of the gradient for the cost function
    */
   public PairOfSimpleMatrixArray backprop(SimpleMatrix X, SimpleMatrix Y) {
-    epochCount++;
     int hiddenLayerSize = hiddenDims.length;
     // \partial J / \partial b
     SimpleMatrix[] nabla_b = new SimpleMatrix[hiddenLayerSize+2];
