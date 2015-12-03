@@ -48,6 +48,8 @@ public class WindowModel implements Model {
     int maxIters = conf.getMaxIterations() * trainingObs;
     CoNLLEval tester = new CoNLLEval(conf.getConllevalPath());
     
+    J = 0; count = 0;
+    
     Iterator<Document> iter = docs.iterator();
     while (iterCount < maxIters) {
       // If we ran through the DocumentSet, shuffle, and relaunch the iterator
@@ -58,15 +60,21 @@ public class WindowModel implements Model {
       Document d = iter.next();
       WordWindow window = new WordWindow(d, conf.getWindowSize(), wordMap);
       trainDocument(window);
+      
       iterCount++;
       // Evaluate the model at the requested frequency during training
       if (trainEvalFreq > 0 && (iterCount % trainEvalFreq) == 0) {
         System.out.println("  [Test Performance at Iteration " + iterCount + "]");
+        System.out.println("  [COST J: " + J/count + "]");
+        J = 0; count = 0;
         List<String> predictions = this.test(trainData);
         tester.eval(predictions);
       }
     }
   }
+  
+  public double J;
+  public double count;
   
   /**
    * Train the model based on a specific sequence of WordWindows
@@ -79,9 +87,11 @@ public class WindowModel implements Model {
       SimpleMatrix X = idsToWordVector(windowIDs);
       SimpleMatrix Y = targetToVector(targetID);
       
+      J += model.crossEntropyCost(X, Y);
+      count++;
+      
       // Get the updated X with the gradient
       PairOfSimpleMatrixArray nabla = model.backprop(X, Y);
-      
       
       if (true) { //gradientCheck) {
         // Get List of Gradient Matrices

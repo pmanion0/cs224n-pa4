@@ -121,4 +121,21 @@ public class FileIO {
     for (int i=0; i < strVals.length; i++)
       storage[i] = Double.valueOf(strVals[i]);
   }
+  
+  public static void writeMatrix(SimpleMatrix a, String outfile) {
+    PrintWriter out;
+    try {
+      out =  new PrintWriter(new BufferedWriter(new FileWriter(outfile)));
+    } catch (Exception e) {
+      System.err.println("ERROR: Cannot open output file");
+      return;
+    }
+    for (int i=0; i < a.numRows(); i++) {
+      for (int j=0; j < a.numCols(); j++) {
+        out.print(a.get(i,j) + " ");
+      }
+      out.print("\n");
+    }
+    out.close();
+  }
 }

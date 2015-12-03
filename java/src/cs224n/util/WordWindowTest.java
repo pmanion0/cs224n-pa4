@@ -35,6 +35,7 @@ public class WordWindowTest {
     Configuration conf = new Configuration();
     conf.setVocabFilepath("../testdata/wordwindow_vocab.txt");
     conf.setUnknownWord("UUUNKKK");
+    conf.setTargetEntities("PER,O,LOC,ORG");
     map = new WordMap(conf);
   }
 
@@ -48,6 +49,9 @@ public class WordWindowTest {
     
     int[] windowIntAnswer = new int[]{5,0,1};
     assertArrayEquals(windowIntAnswer, test.getIDArray());
+    
+    assertTrue(test.getTargetLabel().equals("PER"));
+    assertTrue(test.getTargetLabelID() == 0);
   }
 
   @Test
@@ -60,6 +64,9 @@ public class WordWindowTest {
     
     int[] windowIntAnswer = new int[]{5,5,0,1,2};
     assertArrayEquals(windowIntAnswer, test.getIDArray());
+    
+    assertTrue(test.getTargetLabel().equals("PER"));
+    assertTrue(test.getTargetLabelID() == 0);
   }
 
   
@@ -76,6 +83,8 @@ public class WordWindowTest {
     windowStrAnswer = new String[]{"<s>","John","joined","PETA","in"};
     assertArrayEquals(windowStrAnswer, test.getWordArray());
     assertArrayEquals(windowIntAnswer, test.getIDArray());
+    assertTrue(test.getTargetLabel().equals("O"));
+    assertTrue(test.getTargetLabelID() == 1);
     
     // Roll 2
     test.rollWindow();
@@ -83,6 +92,8 @@ public class WordWindowTest {
     windowStrAnswer = new String[]{"John","joined","PETA","in","Dallas"};
     assertArrayEquals(windowStrAnswer, test.getWordArray());
     assertArrayEquals(windowIntAnswer, test.getIDArray());
+    assertTrue(test.getTargetLabel().equals("ORG"));
+    assertTrue(test.getTargetLabelID() == 3);
     
     // Roll 3
     test.rollWindow();
@@ -90,6 +101,8 @@ public class WordWindowTest {
     windowStrAnswer = new String[]{"joined","PETA","in","Dallas","Texas"};
     assertArrayEquals(windowStrAnswer, test.getWordArray());
     assertArrayEquals(windowIntAnswer, test.getIDArray());
+    assertTrue(test.getTargetLabel().equals("O"));
+    assertTrue(test.getTargetLabelID() == 1);
     
     // Roll 4
     test.rollWindow();
@@ -97,6 +110,8 @@ public class WordWindowTest {
     windowStrAnswer = new String[]{"PETA","in","Dallas","Texas","</s>"};
     assertArrayEquals(windowStrAnswer, test.getWordArray());
     assertArrayEquals(windowIntAnswer, test.getIDArray());
+    assertTrue(test.getTargetLabel().equals("LOC"));
+    assertTrue(test.getTargetLabelID() == 2);
     
     // Roll 5
     test.rollWindow();
@@ -104,6 +119,8 @@ public class WordWindowTest {
     windowStrAnswer = new String[]{"in","Dallas","Texas","</s>","</s>"};
     assertArrayEquals(windowStrAnswer, test.getWordArray());
     assertArrayEquals(windowIntAnswer, test.getIDArray());
+    assertTrue(test.getTargetLabel().equals("LOC"));
+    assertTrue(test.getTargetLabelID() == 2);
     
     // Roll should return false as window is complete
     assertFalse(test.rollWindow());
@@ -112,15 +129,20 @@ public class WordWindowTest {
   @Test
   public void testOneWordWindow3() {
     List<Datum> tinyExample = new ArrayList<Datum>();
-    tinyExample.add(new Datum("in", ""));
+    tinyExample.add(new Datum("in", "O"));
     
     WordWindow test = new WordWindow(tinyExample, 3, map);
     
     String[] windowStrAnswer = new String[]{"<s>","in","</s>"};
     assertArrayEquals(windowStrAnswer, test.getWordArray());
     
+    
     int[] windowIntAnswer = new int[]{5,3,5};
     assertArrayEquals(windowIntAnswer, test.getIDArray());
+    
+    String out = test.getTargetLabel();
+    assertTrue(test.getTargetLabel().equals("O"));
+    assertTrue(test.getTargetLabelID() == 1);
     
     assertFalse(test.rollWindow());
   }

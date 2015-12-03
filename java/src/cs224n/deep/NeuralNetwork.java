@@ -18,7 +18,7 @@ public class NeuralNetwork implements ObjectiveFunction {
   private List<SimpleMatrix> b1; // Bias for Input + All Hidden Layers
   private SimpleMatrix b2;       // Bias for Output Layer
   private double lambda, alpha;
-  private Random randomGenerator = new Random();
+  private Random randomGenerator = new Random(34983);
 
   /** Create a NeuralNetwork with the provided configuration */
   public NeuralNetwork(Configuration conf) {
