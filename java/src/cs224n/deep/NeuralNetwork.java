@@ -28,57 +28,76 @@ public class NeuralNetwork implements ObjectiveFunction {
   // bias for final layer
   private SimpleMatrix b2;
   private double lambda, alpha;
-  
+  private Random randomGenerator = new Random();
 
-  
+  /** Create a NeuralNetwork with the provided configuration */
   public NeuralNetwork(Configuration conf) {
+    // Force other constructor to initialize all matrices
+    this(conf, null, null, null, null);
+  }
+  
+  public NeuralNetwork(Configuration conf, SimpleMatrix U, SimpleMatrix b2,
+      List<SimpleMatrix> W, List<SimpleMatrix> b1) {
     this.inputDim = conf.getWindowSize() * conf.getWordVecDim();
     this.outputDim = conf.getOutputDim();
     this.hiddenDims = conf.getHiddenDimensions();
     this.lambda = conf.getLambda();
     this.alpha = conf.getLearningRate();
-    this.W = new ArrayList<SimpleMatrix>();
-    this.b1 = new ArrayList<SimpleMatrix>();
-    
-    //System.out.println(W.get(0));
-    initializeMatrices();
+
+    this.U  = (U==null  ? initializeU()  : U);
+    this.W  = (W==null  ? initializeW()  : W);
+    this.b1 = (b1==null ? initializeB1() : b1);
+    this.b2 = (b2==null ? initializeB2() : b2);
   }
   
-  /**
-   * Randomly initialize all parameters for the network
-   */
-  public void initializeMatrices() {
-    // Add a SimpleMatrix to parameters list for every layer of the network
-  	Random rand = new Random();
-  	int fanIn = inputDim;
-  	int layer = 0;
-  	double epsilon;
-
-		double[][] allOnes = new double [inputDim][1];
-		for (double[] row : allOnes)
-			Arrays.fill(row, 1.0);
-		W.add(0, new SimpleMatrix(allOnes)); 
-		b1.add(0, new SimpleMatrix(inputDim,1));
-		
-  	// initialize non-final layer
-    for (int hiddenDim : hiddenDims) {
-      // [Input:Hidden#1] [Hidden#1:Hidden#2] ... [Hidden#n:Output]
-    	int fanOut = hiddenDim;
-    	epsilon = Math.sqrt(6) / Math.sqrt(fanIn + fanOut);   	
-    	W.add(layer+1, SimpleMatrix.random(fanOut, fanIn, -epsilon, epsilon, rand)); 
-    	// initialize to 0;
-    	b1.add(layer+1, new SimpleMatrix(fanOut, 1));
-    	layer++;
-      // update fanIn
-    	fanIn = hiddenDim;
-    }
-    
-    // initialize final layer
+  
+  /** Initialize the final hidden-to-output layer weights U */
+  public SimpleMatrix initializeU() {
     int lastHiddenDim = hiddenDims[hiddenDims.length - 1];
     double epsilonLast = Math.sqrt(6) / Math.sqrt(outputDim + lastHiddenDim);
-    U = SimpleMatrix.random(outputDim, lastHiddenDim, -epsilonLast, epsilonLast, rand);
-    b2 = new SimpleMatrix(outputDim,1);
+    SimpleMatrix output = SimpleMatrix.random(outputDim, lastHiddenDim, -epsilonLast, epsilonLast, randomGenerator);
+    return output;
   }
+  
+  /** Initialize the input-to-hidden and hidden-to-hidden layer weights W */
+  public List<SimpleMatrix> initializeW() {
+    List<SimpleMatrix> output = new ArrayList<SimpleMatrix>();
+    
+    // Initialize First Layer Weights (all 1's)
+    output.add(0, SimpleMatrix.identity(inputDim));
+    output.get(0).reshape(inputDim, 1);
+    
+    // Initialize All Hidden Layer Weights (random weights)
+    int fanIn = inputDim;
+    for (int layer=0; layer < hiddenDims.length; layer++) {
+      int fanOut = hiddenDims[layer];
+      double epsilon = Math.sqrt(6) / Math.sqrt(fanIn + fanOut);  
+      output.add(layer+1, SimpleMatrix.random(fanOut, fanIn, -epsilon, epsilon, randomGenerator));
+      fanIn = fanOut;
+    }
+    return output;
+  }
+  
+  /** Initialize the bias terms for all hidden layers b1 */
+  public List<SimpleMatrix> initializeB1() {
+    List<SimpleMatrix> output = new ArrayList<SimpleMatrix>();
+    
+    // Initialize First Layer Bias Terms (all 0's)
+    output.add(0, new SimpleMatrix(inputDim, 1));
+    
+    // Initialize All Hidden Bias Layer Terms (all 0's)
+    for (int layer=0; layer < hiddenDims.length; layer++) {
+      int layerSize = hiddenDims[layer];
+      output.add(layer+1, new SimpleMatrix(layerSize, 1));
+    }
+    return output;
+  }
+  
+  /** Initialize the final layer bias terms b2 */
+  public SimpleMatrix initializeB2() {
+    return new SimpleMatrix(outputDim,1);
+  }
+
   
   /**
    * Return tanh of input matrix z
