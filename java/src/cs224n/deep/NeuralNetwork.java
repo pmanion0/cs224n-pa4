@@ -199,7 +199,7 @@ public class NeuralNetwork implements ObjectiveFunction {
   	for (int i = 0; i < outputDim; i++) {
   		double y_i = Y.get(i);
   		double p_i = probs[i];
-  		error -= y_i * Math.log(p_i) + (1 - y_i) * Math.log(1 - p_i);
+  		error -= y_i * Math.log(p_i);
   	}
   	// Include Regularization Cost -- J_R(theta)
   	for (int i = 0; i < W.size(); i++) {
@@ -228,8 +228,8 @@ public class NeuralNetwork implements ObjectiveFunction {
     
     // Output Layer Gradients
     SimpleMatrix predictions = activation[hiddenLayerSize+1];
-    SimpleMatrix deltaCurrent = predictions.minus(Y.transpose());
     SimpleMatrix activationBelow = activation[hiddenLayerSize];
+    SimpleMatrix deltaCurrent = predictions.minus(Y.transpose());
 
     nabla_b[hiddenLayerSize+1] = deltaCurrent;
     nabla_w[hiddenLayerSize+1] = deltaCurrent.mult(activationBelow.transpose());
@@ -265,14 +265,14 @@ public class NeuralNetwork implements ObjectiveFunction {
   	int hiddenLayerSize = hiddenDims.length;
   	
   	// update output layer U, b2
-  	double coef = alpha * (lambda );
+  	double coef = alpha * lambda;
   	U = U.scale(1 - coef).minus(nabla_w[hiddenLayerSize+1].scale(alpha));
   	b2 = b2.minus(nabla_b[hiddenLayerSize+1].scale(alpha));
   	
   	// update hidden layer W and b1
-  	for (int l = 1; l <= hiddenLayerSize; l++) {
-  		W.set(l, W.get(l).scale(1 - coef).minus(nabla_w[l].scale(alpha)));
-  		b1.set(l, b1.get(l).minus(nabla_b[l].scale(alpha)));
+  	for (int l=0; l < hiddenLayerSize; l++) {
+  		W.set(l, (W.get(l).scale(1 - coef)).minus(nabla_w[l+1].scale(alpha)));
+  		b1.set(l, b1.get(l).minus(nabla_b[l+1].scale(alpha)));
   	}
   	
   	// update X
