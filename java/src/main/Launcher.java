@@ -38,6 +38,7 @@ public class Launcher {
     
     // Run the CoNLL Evaluator on the output and print to console
     CoNLLEval tester = new CoNLLEval(conf.getConllevalPath());
+    System.out.println("  [Final Test Performance]");
     tester.eval(conf.getOutputFile());
   }
 
