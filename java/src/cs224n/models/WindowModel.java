@@ -20,7 +20,7 @@ import cs224n.util.WordWindow;
 
 public class WindowModel implements Model {
   
-  private WordMap wordMap;
+  public WordMap wordMap;
 
   Configuration conf;
   public NeuralNetwork model;

@@ -40,6 +40,8 @@ public class Launcher {
     CoNLLEval tester = new CoNLLEval(conf.getConllevalPath());
     System.out.println("  [Final Test Performance]");
     tester.eval(conf.getOutputFile());
+    
+    //model.wordMap.writeWordVector("../data/postTrainingWordVectors.txt");
   }
 
 }

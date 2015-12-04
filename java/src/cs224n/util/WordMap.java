@@ -133,4 +133,9 @@ public class WordMap {
   public HashMap<String, Integer> getWordToNum() { return wordToNum; }
   /** Return the entire numToWord HashMap- use getTargetNum(String) for individual target lookups */
   public HashMap<Integer, String> getNumToWord() { return numToWord; }
+  
+  /** Write out the current word vector */
+  public void writeWordVector(String filepath) {
+    FileIO.writeMatrix(this.wordVector, filepath);
+  }
 }
