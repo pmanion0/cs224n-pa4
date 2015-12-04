@@ -19,6 +19,7 @@ public class NeuralNetwork implements ObjectiveFunction {
   private SimpleMatrix b2;       // Bias for Output Layer
   private double lambda, alpha;
   private Random randomGenerator = new Random(34983);
+  private int epochCounter;
 
   /** Create a NeuralNetwork with the provided configuration */
   public NeuralNetwork(Configuration conf) {
@@ -35,6 +36,7 @@ public class NeuralNetwork implements ObjectiveFunction {
     this.hiddenDims = conf.getHiddenDimensions();
     this.lambda = conf.getLambda();
     this.alpha = conf.getLearningRate();
+    this.epochCounter = 1;
 
     // Initialize any matrices not provided by the user
     this.U  = (U==null  ? initializeU()  : U);
@@ -259,24 +261,25 @@ public class NeuralNetwork implements ObjectiveFunction {
   }
   
   // TODO: need a method to update gradient
-  public SimpleMatrix updateGradient(SimpleMatrix X, PairOfSimpleMatrixArray nabla) {
+  public SimpleMatrix updateGradient(SimpleMatrix X, PairOfSimpleMatrixArray nabla, double epochCount) {
   	SimpleMatrix[] nabla_w = nabla.getFirstSimpleMatrixArray();
   	SimpleMatrix[] nabla_b = nabla.getSecondSimpleMatrixArray();
   	int hiddenLayerSize = hiddenDims.length;
+  	double alphaAdj = alpha / epochCount;
   	
   	// update output layer U, b2
-  	double coef = alpha * lambda;
-  	U = U.scale(1 - coef).minus(nabla_w[hiddenLayerSize+1].scale(alpha));
-  	b2 = b2.minus(nabla_b[hiddenLayerSize+1].scale(alpha));
+  	double coef = alphaAdj * lambda;
+  	U = U.scale(1 - coef).minus(nabla_w[hiddenLayerSize+1].scale(alphaAdj));
+  	b2 = b2.minus(nabla_b[hiddenLayerSize+1].scale(alphaAdj));
   	
   	// update hidden layer W and b1
   	for (int l=0; l < hiddenLayerSize; l++) {
-  		W.set(l, (W.get(l).scale(1 - coef)).minus(nabla_w[l+1].scale(alpha)));
-  		b1.set(l, b1.get(l).minus(nabla_b[l+1].scale(alpha)));
+  		W.set(l, (W.get(l).scale(1 - coef)).minus(nabla_w[l+1].scale(alphaAdj)));
+  		b1.set(l, b1.get(l).minus(nabla_b[l+1].scale(alphaAdj)));
   	}
   	
   	// update X
-  	SimpleMatrix X_transpose = X.transpose().minus(nabla_b[0].scale(alpha));
+  	SimpleMatrix X_transpose = X.transpose().minus(nabla_b[0].scale(alphaAdj));
   	return X_transpose.transpose();
   }
 
