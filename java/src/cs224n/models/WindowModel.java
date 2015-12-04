@@ -48,7 +48,7 @@ public class WindowModel implements Model {
     int maxIters = conf.getMaxIterations() * trainingObs;
     CoNLLEval tester = new CoNLLEval(conf.getConllevalPath());
     
-    J = 0; count = 0;
+    J = 0; count = 0; epochCount = 1;
     
     Iterator<Document> iter = docs.iterator();
     while (iterCount < maxIters) {
@@ -56,6 +56,7 @@ public class WindowModel implements Model {
       if (!iter.hasNext()) {
         docs.shuffle();
         iter = docs.iterator();
+        epochCount++;
       }
       Document d = iter.next();
       WordWindow window = new WordWindow(d, conf.getWindowSize(), wordMap);
@@ -73,8 +74,7 @@ public class WindowModel implements Model {
     }
   }
   
-  public double J;
-  public double count;
+  public double J, count, epochCount;
   
   /**
    * Train the model based on a specific sequence of WordWindows
@@ -93,7 +93,20 @@ public class WindowModel implements Model {
       // Get the updated X with the gradient
       PairOfSimpleMatrixArray nabla = model.backprop(X, Y);
       
-      if (true) { //gradientCheck) {
+//      System.out.println("Predicted Class: " + model.getBestOutputClass(X) 
+//          + " --- Actual Class: "
+//          + (Y.get(0,0)==1 ? 0 : Y.get(0,1)==1 ? 1 : Y.get(0,2)==1 ? 2 : Y.get(0,3)==1 ? 3 : Y.get(0,4)==1 ? 4 : -1));
+//      double wgrad = nabla.getFirstSimpleMatrixArray()[0].elementSum();
+//      double bgrad = nabla.getSecondSimpleMatrixArray()[0].elementSum();
+//      System.out.println("Sum of WGradient: " + wgrad + " --- Sum of BGradient" + bgrad);
+//      double[] scores = model.score(X);
+//      for (double d : scores)
+//        System.out.print(" " + d);
+//      System.out.print("\n");
+//      if (Math.abs(wgrad) > 8)
+//        System.out.print("");
+      
+      if (false) { //gradientCheck) {
         // Get List of Gradient Matrices
         SimpleMatrix[] nabla_w = nabla.getFirstSimpleMatrixArray();
         List<SimpleMatrix> gradients = new ArrayList<SimpleMatrix>();
@@ -111,7 +124,7 @@ public class WindowModel implements Model {
         SimpleMatrix[] emp_nabla_w = model.empiricalNabla(X, Y);
         model.checkGradient(nabla_w, emp_nabla_w);*/
       }
-      SimpleMatrix updatedX = model.updateGradient(X, nabla).transpose();
+      SimpleMatrix updatedX = model.updateGradient(X, nabla, epochCount).transpose();
       
       // Update the word vectors if option is turned on 
       if (conf.getLearnWordVec())
