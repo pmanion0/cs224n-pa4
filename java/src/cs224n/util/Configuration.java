@@ -24,18 +24,18 @@ public class Configuration {
     targetEntities = "O,LOC,MISC,ORG,PER";
     conllevalPath = "../conlleval";
     
-    lambda = 0.0;
-    learningRate = 1e-4;
+    lambda = 0.001;
+    learningRate = 0.03;
     
-    maxIterations = 10;
-    windowSize = 3;
+    maxIterations = 20;
+    windowSize = 5;
     wordVecDim = 50;
     trainEvalFreq = 0;
     
-    learnWordVec = false;
+    learnWordVec = true;
     allLowercase = true;
     
-    hiddenDimensions = new int[]{10};
+    hiddenDimensions = new int[]{100};
   }
   
 	public Configuration(String opts) {
