@@ -14,7 +14,10 @@ public class Launcher {
   public static void main(String[] args) throws IOException {
     if (args.length == 0)
       System.out.println("WARNING: No arguments found - using all default values");
-    String commandLineArgString = String.join(" ", args);
+    
+    String commandLineArgString = "";
+    for (String arg : args)
+      commandLineArgString += arg + " ";
     Configuration conf = new Configuration(commandLineArgString);
     run(conf);
   }
