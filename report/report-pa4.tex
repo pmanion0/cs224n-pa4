@@ -150,8 +150,14 @@ The false negative is dominated by misclassifying MISC as O. A lot of them are r
 
 \section{Extra Credit}
 \subsection{Alternative Prepared Word Vectors}
+
+
 \subsection{Deeper Neural Networks}
-
-
+Our design and implementation works for any hidden layer architectures. To study the effect of deeper neural networks, we run experiments with two hidden layers and set the size to be the Cartesian combination of $\{50, 100\}$ and $\{50, 150, 300\}$ for the first and second hidden layer, respectively. We also included the performance of baseline model that only has one hidden layer. From ? we can see deeper neural networks indeed improved the performance but only slightly. However, for the same depth, the performance seems not very sensitive to the size of hidden layers. We also implemented 3 and 4 hidden layers of neural networks. Surprisingly, the performance didn't improve as the network gets deeper. More experiments are needed to fully understand the role of the depth of neural networks.
 
 \end{document}  
+
+
+
+
+
